@@ -1,0 +1,25 @@
+plugins {
+    id 'groovy'
+}
+
+group 'org.ysb33r.gradle'
+version '0.1-SNAPSHOT'
+
+
+sourceCompatibility = 1.7
+
+repositories {
+    jcenter()
+}
+
+ext {
+    depSpock = "org.spockframework:spock-core:1.0-groovy-${GroovySystem.version.replaceAll(/\.\d+$/,'')}"
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    testCompile (depSpock) {
+        exclude module : 'groovy-all'
+    }
+}

@@ -65,7 +65,7 @@ abstract class AbstractDistributionInstaller {
         this.execPatterns.addAll(relPaths as List)
     }
 
-    /** Set a checksum that needs to be verified gainst dowmloaded archive
+    /** Set a checksum that needs to be verified against dowmloaded archive
      *
      * @param cs SHA-256 Hex-encoded checksum
      */
@@ -73,7 +73,7 @@ abstract class AbstractDistributionInstaller {
         this.checksum = cs
     }
 
-    /** Returns the location which is the top or home holder for a distribution.
+    /** Returns the location which is the top or home folder for a distribution.
      *
      * @return
      */
@@ -90,7 +90,7 @@ abstract class AbstractDistributionInstaller {
 
     /** Override this method to provide alternative means to look for distributions.
      *
-     * @version Version fo distribution to locate
+     * @version Version of distribution to locate
      *
      * @return Location of distribution or null if none were found.
      */
@@ -99,7 +99,7 @@ abstract class AbstractDistributionInstaller {
     }
 
     /** Sets a download root directory for the distribution. If not supplied the default is to use the
-     * Gradle User Home. This method is provided for convenience and will mostly only be used for testing
+     * Gradle User Home. This method is provided for convenience and is mostly only used for testing
      * purposes.
      *
      * @param downloadRootDir
@@ -227,8 +227,8 @@ Expected checksum: ${expectedSum}
      */
     @PackageScope File getDistFromCache()  {
 
-        final URI distributionUrl = configuration.getDistribution();
-        final String distributionSha256Sum = configuration.getDistributionSha256Sum();
+        final URI distributionUrl = configuration.getDistribution()
+        final String distributionSha256Sum = configuration.getDistributionSha256Sum()
 
         final PathAssembler pathAssembler = new PathAssembler(downloadRoot ?: project.gradle.gradleUserHomeDir)
         final PathAssembler.LocalDistribution localDistribution = pathAssembler.getDistribution(configuration)
@@ -236,7 +236,7 @@ Expected checksum: ${expectedSum}
         final File localCompressedFile = localDistribution.zipFile
 
         return exclusiveFileAccessManager.access(localCompressedFile, new Callable<File>() {
-            public File call() throws Exception {
+            File call() throws Exception {
                 final File markerFile = new File(localCompressedFile.getParentFile(), localCompressedFile.getName() + ".ok")
                 if (distDir.isDirectory() && markerFile.isFile()) {
                     return getAndVerifyDistributionRoot(distDir, distDir.getAbsolutePath())
@@ -266,7 +266,7 @@ Expected checksum: ${expectedSum}
 
                 verifyDownloadChecksum(configuration.getDistribution().toString(), localCompressedFile, distributionSha256Sum)
 
-                logger.log("Unzipping " + localCompressedFile.getAbsolutePath() + " to " + distDir.getAbsolutePath())
+                logger.log("Unpacking " + localCompressedFile.getAbsolutePath() + " to " + distDir.getAbsolutePath())
                 unpack(localCompressedFile, distDir)
 
                 File root = getAndVerifyDistributionRoot(distDir, safeDistributionUrl.toString())
@@ -277,6 +277,13 @@ Expected checksum: ${expectedSum}
         })
     }
 
+    /** Returns the attached project
+     *
+     * @return Attached project instance
+     */
+    protected Project getProject() {
+        this.project
+    }
 
     /**
      * Create a safe URI from the given one by stripping out user info.
@@ -289,7 +296,7 @@ Expected checksum: ${expectedSum}
     }
 
     // TODO: Handle tar.gz, tgz, tar.bz2, tbz
-    private compressedTree(final File srcArchive) {
+    private FileTree compressedTree(final File srcArchive) {
         project.zipTree(srcArchive)
     }
 

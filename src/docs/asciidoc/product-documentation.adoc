@@ -1,0 +1,11 @@
+= Grolifant : A Library to Support Gradle Plugin Development
+:author: Schalk W. Cronjé
+:doctype: book
+:toc: right
+:icons: font
+:sourcedir: {projectdir}/src/main/groovy/org/ysb33r/gradle/olifant
+:testdir: {projectdir}/src/main/groovy/org/ysb33r/gradle/olifant
+
+include::parts/distribution-installer.adoc[]
+
+include::parts/grolifant.adoc[]

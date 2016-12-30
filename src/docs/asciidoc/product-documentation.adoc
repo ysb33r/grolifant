@@ -7,8 +7,11 @@
 :sdkman: http://sdkman.io[SDKManager]
 :sourcedir: {includetopdir}/src/main/groovy/org/ysb33r/gradle/olifant
 :testdir: {includetopdir}/src/test/groovy/org/ysb33r/gradle/olifant
+:compatdir: {includetopdir}/src/gradleTest/runtimeCompatibility/src/test/groovy/org/ysb33r/gradle/olifant/compatibility/testing
 :groovydoc: ../api/org/ysb33r/gradle/olifant
 
 include::parts/distribution-installer.adoc[]
+
+include::parts/stringutils.adoc[]
 
 include::parts/grolifant.adoc[]

@@ -13,8 +13,10 @@
  */
 package org.ysb33r.gradle.olifant
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.gradle.util.CollectionUtils
+import org.ysb33r.gradle.olifant.internal.LegacyLevel
 
 /** A collection of utilities for converting to strings.
  *
@@ -23,16 +25,54 @@ import org.gradle.util.CollectionUtils
 @CompileStatic
 class StringUtils {
 
-    /** Converts most things to a string. Closures will be evaluated as well.
+    /** Converts most things to a string. Closures are evaluated as well.
      *
-     * @param stringy
+     * @param stringy An object that can be converted to a string or a closure that
+     *   can be evaluated to something that can be converted to a string.
      * @return A string object
      */
     static String stringize(final Object stringy) {
-        if (stringy instanceof Closure) {
-            CollectionUtils.stringize([((Closure)stringy).call()])[0]
+        if(LegacyLevel.PRE_2_2) {
+            if (stringy instanceof Closure) {
+                StringUtils.stringize_legacy([((Closure)stringy).call()])[0]
+            } else {
+                StringUtils.stringize_legacy([stringy])[0]
+            }
         } else {
-            CollectionUtils.stringize([stringy])[0]
+            if (stringy instanceof Closure) {
+                CollectionUtils.stringize([((Closure)stringy).call()])[0]
+            } else {
+                CollectionUtils.stringize([stringy])[0]
+            }
         }
+    }
+
+    /** Converts a collection of most things to a list of strings. Closures are evaluated as well.
+     *
+     * @param Iterable list of objects that can be converetd to strings, including closure that can be evaluated
+     *   into objects that can be converted to strings.
+     * @return A list of strings
+     */
+    static List<String> stringize(final Iterable<?> stringyThings) {
+        List<Object> collection = []
+        for( Object item in stringyThings) {
+            if(item instanceof Closure) {
+                collection.add(StringUtils.stringize(item))
+            } else {
+                collection.add(item)
+            }
+        }
+        if(LegacyLevel.PRE_2_2) {
+            stringize_legacy(collection)
+        } else {
+            (List<String>)CollectionUtils.stringize(collection)
+        }
+    }
+
+    @CompileDynamic
+    private static List<String> stringize_legacy(Iterable<?> stringyList) {
+        List<String> collection = []
+        CollectionUtils.stringize(stringyList,collection)
+        collection
     }
 }

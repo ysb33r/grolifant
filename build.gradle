@@ -29,7 +29,6 @@ repositories {
     jcenter()
 }
 
-
 dependencies {
     compile gradleApi()
     compile localGroovy()
@@ -59,6 +58,10 @@ jar {
     manifest {
         attributes 'Implementation-Title': moduleName, 'Implementation-Version': version
     }
+}
+
+groovydoc {
+    destinationDir file("${buildDir}/docs/api")
 }
 
 uploadArchives  {
@@ -163,7 +166,7 @@ asciidoctor {
     group "Documentation"
     description 'Generates the main product documentation & changelog'
     mustRunAfter validateDocVersions
-    outputDir "${buildDir}/docs/plugin"
+    outputDir "${buildDir}/docs/product"
     separateOutputDirs = false
 
     sources {
@@ -171,8 +174,8 @@ asciidoctor {
         include 'changelog.adoc'
     }
 
-    attributes revnumber: "${version}",
-        projectdir : projectDir.absolutePath
+    attributes revnumber: version,
+        includetopdir : projectDir.absolutePath
 }
 
 

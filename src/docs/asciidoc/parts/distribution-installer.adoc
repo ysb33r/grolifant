@@ -1,0 +1,8 @@
+== Distribution Installer
+
+There are quite a number of occasions where it would be useful to download various versions SDK or distributions from a variety of sources and then install them locally without having to affect the environment of a user. The Gradle Wrapper is already a good example of this. Obvisouly it would be good if one could also utilise otehr solutions that manage distributions and SDKs on a per-user basis such as the excellent http://sdkman.io[SDKManager].
+
+The `AbstractDistributionInstaller` provides the base for plugin developers to add such functionality to their plugins without too much trouble.
+
+=== Getting started
+

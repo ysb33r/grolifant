@@ -1,0 +1,14 @@
+.metadata
+.gradle
+.groovy
+build
+bin
+.classpath
+.project
+.settings
+*.iml
+*.ipr
+*.iws
+.idea
+*.swp
+out

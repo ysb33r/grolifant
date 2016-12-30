@@ -7,9 +7,12 @@ plugins {
     id 'org.ysb33r.gradletest' version '1.0-beta5'
 }
 
+import org.asciidoctor.gradle.AsciidoctorTask
+
 group 'org.ysb33r.gradle'
 version '0.1-SNAPSHOT'
 sourceCompatibility = 1.7
+
 
 ext {
     bintrayOwner = 'ysb33r'
@@ -34,7 +37,6 @@ dependencies {
         exclude module : 'groovy-all'
     }
 }
-
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -87,4 +89,113 @@ license {
     ext.year = '2016 - 2017'
     excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/*.md','**/*.properties'])
     mapping 'gradle', 'SLASHSTAR_STYLE'
+}
+
+task validateDocVersions {
+    group 'Documentation'
+    description 'Validates if current version is listed in (not SNAPSHOTS)'
+    onlyIf notSnapshot
+
+    ext {
+        versionsFile = file('src/docs/landingPage/display-versions.txt')
+    }
+
+    doLast {
+        if(null == versionsFile.readLines().find { it == version }) {
+            throw new GradleException("Current version ${version} is not listed. " +
+                "Please correct ${versionsFile} before installing.")
+        }
+    }
+}
+
+task generateDocVersionsTable( type : Copy ) {
+
+    ext {
+        targetDir = file("${buildDir}/generated-docs")
+    }
+
+    group "Documentation"
+    description 'Generates Asciidoc content for landing page'
+    mustRunAfter validateDocVersions
+
+    from 'src/docs/landingPage', {
+        include 'display-versions.txt'
+        rename ~/(.+)\.txt/,'$1.adoc'
+        filter { String line ->
+            if(line.startsWith('//') || line.startsWith('#')) {
+                return null
+            }
+            final String docsLink = "link:${line}/docs/product-documentation.html[Docs]"
+            final String apiLink  = line == '0.5.5' ? '' : "link:${line}/api/index.html[Groovydoc]"
+            final String clogLink = "link:${line}/docs/changelog.html[Changelog]"
+            return "a|*${line}*|${docsLink}|${apiLink}|${clogLink}"
+        }
+    }
+
+    into targetDir
+}
+
+task landingPage( type : AsciidoctorTask ) {
+
+    dependsOn generateDocVersionsTable
+    mustRunAfter validateDocVersions
+
+    inputs.dir generateDocVersionsTable.targetDir
+    sourceDir 'src/docs/landingPage'
+    outputDir "${buildDir}/docs/landingPage"
+    separateOutputDirs = false
+
+    sources {
+        include 'index.adoc'
+    }
+
+    resources {
+        from 'stylesheets'
+        from 'images'
+    }
+
+    attributes gendocdir : file("${generateDocVersionsTable.targetDir}").absolutePath,
+        compatdir : file('compatibility').absolutePath,
+        revnumber : "${version}"
+}
+
+asciidoctor {
+    group "Documentation"
+    description 'Generates the main product documentation & changelog'
+    mustRunAfter validateDocVersions
+    outputDir "${buildDir}/docs/plugin"
+    separateOutputDirs = false
+
+    sources {
+        include 'product-documentation.adoc'
+        include 'changelog.adoc'
+    }
+
+    attributes revnumber: "${version}",
+        projectdir : projectDir.absolutePath
+}
+
+
+task installDocs( type : Copy ) {
+
+    dependsOn validateDocVersions, asciidoctor, landingPage, groovydoc
+
+    from landingPage.outputDir
+    into websitePublishFolder
+
+    with copySpec {
+        from asciidoctor.outputDir
+        into "${version}/docs"
+    }
+
+    with copySpec {
+        from groovydoc
+        into "${version}/api"
+    }
+
+    doLast {
+        logger.lifecycle "Files copied to website repo. To publish, change to ${websitePublishFolder} and commit and push from there."
+    }
+
+    onlyIf notSnapshot
 }

@@ -1,0 +1,26 @@
+= Grolifant
+:imagesdir: images
+:icons: font
+
+A library to Support Gradle Plugin Development.
+
+.Product version documentation
+[cols="4*"]
+|===
+include::{gendocdir}/display-versions.adoc[]
+|===
+
+== Other links
+
+* https://github.com/ysb33r/grolifant[Fork me on Github]
+
+
+////
+== Contributors
+
+A special thank you goes to:
+
+* https://github.com/xyz[XYZ] - DESCRIPTION.
+
+If you would like to contribute, please see https://github.com/ysb33r/grolifant/blob/master/HACKING.adoc[HACKING.adoc]
+////

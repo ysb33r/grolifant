@@ -45,31 +45,39 @@ abstract class AbstractDistributionInstaller {
 
     /** Set candidate name for SdkMan if the latter should be searched for installed versions
      *
-     * @param sdkCandidateName
+     * @param sdkCandidateName SDK Candidate name. This is the same names that will be shown when
+     *   running {@code sdk list candidates} on the command-line.
      */
     void setSdkManCandidateName(final String sdkCandidateName) {
         this.sdkManCandidateName = sdkCandidateName
     }
 
-    /** Add patterns for files to be marked executable
+    /** Add patterns for files to be marked executable,
      *
-     * @param relPaths
+     * Calling this method multiple times simply appends for patterns
+     * @param relPaths One or more ANT-stype include patterns
      */
     void addExecPattern(String... relPaths) {
         this.execPatterns.addAll(relPaths as List)
     }
 
-    /** Set a checksum that needs to be verified against dowmloaded archive
+    /** Set a checksum that needs to be verified against downloaded archive
      *
      * @param cs SHA-256 Hex-encoded checksum
      */
     void setChecksum(final String cs) {
-        this.checksum = cs
+        if(cs.length() != 64 || !(cs ==~ /[\p{Digit}\p{Alpha}]{64}/) ) {
+            throw new IllegalArgumentException("Not a valid SHA-256 checksum")
+        }
+        this.checksum = cs.toLowerCase()
     }
 
     /** Returns the location which is the top or home folder for a distribution.
      *
-     * @return
+     *  This value is affected by {@link #setDownloadRoot(java.io.File)} and
+     *  the parameters passed in during construction time.
+     *
+     * @return Location of the distribution.
      */
     File getDistributionRoot() {
 
@@ -94,11 +102,15 @@ abstract class AbstractDistributionInstaller {
         null
     }
 
-    /** Sets a download root directory for the distribution. If not supplied the default is to use the
-     * Gradle User Home. This method is provided for convenience and is mostly only used for testing
+    /** Sets a download root directory for the distribution.
+     *
+     * If not supplied the default is to use the Gradle User Home.
+     * This method is provided for convenience and is mostly only used for testing
      * purposes.
      *
-     * @param downloadRootDir
+     * The fodler will be created at download time if it does not exist.
+     *
+     * @param downloadRootDir Any writeable directory on the filesystem.
      */
     void setDownloadRoot(File downloadRootDir) {
         this.downloadRoot = downloadRootDir
@@ -134,43 +146,52 @@ abstract class AbstractDistributionInstaller {
         this.basePath = basePath
     }
 
+    /** Validates that the unpacked distirbution is good.
+     *
+     * The default implementation simply checks that only one directory should exist.
+     *
+     * @param distDir Directory where distribution was unpacked to.
+     * @param distributionDescription A descriptive name of the distribution
+     * @return The directory where the real distribution now exists. In the default implementation it will be
+     *   the single directory that exists below {@code distDir}.
+     *
+     * @throw {@link DistributionFailedException} if distribution failed to meet criteria.
+     */
     protected File getAndVerifyDistributionRoot(final File distDir, final String distributionDescription) {
         List<File> dirs = listDirs(distDir)
         if (dirs.isEmpty()) {
-            throw new GradleException("${distributionName} '${distributionDescription}' does not contain any directories. Expected to find exactly 1 directory.")
+            throw new DistributionFailedException("${distributionName} '${distributionDescription}' does not contain any directories. Expected to find exactly 1 directory.")
         }
         if (dirs.size() != 1) {
-            throw new GradleException("${distributionName} '${distributionDescription} contains too many directories. Expected to find exactly 1 directory.")
+            throw new DistributionFailedException("${distributionName} '${distributionDescription} contains too many directories. Expected to find exactly 1 directory.")
         }
         return dirs[0]
     }
 
+    /** Verifies the checksum (if provided) of a newly downloaded distribution archive.
+     *
+     * @param sourceUrl The URL/URI where it was downloaded from
+     * @param localCompressedFile The location of the downloaded archive
+     * @param expectedSum The expected checksum. Can be null in which case no checks will be performed.
+     *
+     * @throw {@link ChecksumFailedException} if the checksum did not match
+     */
     protected void verifyDownloadChecksum(final String sourceUrl, final File localCompressedFile, final String expectedSum) {
-        if (this.checksum != null) {
+        if (expectedSum != null) {
             String actualSum = calculateSha256Sum(localCompressedFile)
             if (!this.checksum.equals(actualSum)) {
                 localCompressedFile.delete()
-                String message = """Verification of ${distributionName} failed!
-
-This ${distributionName} may have been tampered with.
- Distribution Url: ${sourceUrl}
-Download Location: ${localCompressedFile}
-Expected checksum: ${expectedSum}
-  Actual checksum: ${actualSum}
-"""
-                throw new RuntimeException(message)
+                throw new ChecksumFailedException(distributionName,sourceUrl,localCompressedFile,expectedSum,actualSum)
             }
         }
     }
 
-    protected String calculateSha256Sum(final File file) {
-        file.withInputStream { InputStream content ->
-            MessageDigest digest = MessageDigest.getInstance("SHA-256")
-            content.eachByte(4096) { bytes, len -> digest.update(bytes, 0, len) }
-            digest.digest().encodeHex().toString()
-        }
-    }
-
+    /** Provides a list of directories below an unpacked distribution
+     *
+     * @param distDir Unpacked distribution directory
+     * @return List of directories. Can be empty is nothing was unpacked or only files exist within the
+     *   supplied directory.
+     */
     protected List<File> listDirs(File distDir) {
         if(distDir.exists()) {
             distDir.listFiles(new FileFilter() {
@@ -184,6 +205,19 @@ Expected checksum: ${expectedSum}
         }
     }
 
+    /** Unpacks a downloaded archive.
+     *
+     * The default implementation supports
+     * <ul>
+     * <li>zip</li>
+     * <li>tar</li>
+     * <li>tar.gz & tgz</li>
+     * <li>tar.bz2 & tbz</li>
+     * </ul>
+     *
+     * @param srcArchive The location of the download archive
+     * @param destDir The directory where the archive needs to be unpacked into
+     */
     @CompileDynamic
     protected void unpack(final File srcArchive, final File destDir) {
         final FileTree archiveTree = compressedTree(srcArchive)
@@ -223,9 +257,9 @@ Expected checksum: ${expectedSum}
         final WrapperConfiguration configuration = new WrapperConfiguration()
         configuration.distribution = uriFromVersion(distributionVersion)
         configuration.distributionPath = configuration.zipPath = basePath
+        configuration.distributionSha256Sum = this.checksum
 
         final URI distributionUrl = configuration.getDistribution()
-        final String distributionSha256Sum = configuration.getDistributionSha256Sum()
 
         final PathAssembler pathAssembler = new PathAssembler(downloadRoot ?: project.gradle.gradleUserHomeDir)
         final PathAssembler.LocalDistribution localDistribution = pathAssembler.getDistribution(configuration)
@@ -261,7 +295,7 @@ Expected checksum: ${expectedSum}
                     dir.deleteDir()
                 }
 
-                verifyDownloadChecksum(configuration.getDistribution().toString(), localCompressedFile, distributionSha256Sum)
+                verifyDownloadChecksum(configuration.getDistribution().toString(), localCompressedFile, configuration.distributionSha256Sum)
 
                 logger.log("Unpacking " + localCompressedFile.getAbsolutePath() + " to " + distDir.getAbsolutePath())
                 unpack(localCompressedFile, distDir)
@@ -292,9 +326,29 @@ Expected checksum: ${expectedSum}
         new URI(uri.scheme, null, uri.host, uri.port, uri.path, uri.query, uri.fragment)
     }
 
-    // TODO: Handle tar.gz, tgz, tar.bz2, tbz
+    private String calculateSha256Sum(final File file) {
+        file.withInputStream { InputStream content ->
+            MessageDigest digest = MessageDigest.getInstance("SHA-256")
+            content.eachByte(4096) { bytes, len -> digest.update(bytes, 0, len) }
+            digest.digest().encodeHex().toString()
+        }
+    }
+
+
     private FileTree compressedTree(final File srcArchive) {
-        project.zipTree(srcArchive)
+        final String name = srcArchive.name.toLowerCase()
+        if(name.endsWith('.zip')) {
+            return project.zipTree(srcArchive)
+        } else if(name.endsWith('.tar')) {
+            return project.tarTree(srcArchive)
+        } else if(name.endsWith('.tar.gz') || name.endsWith('.tgz')) {
+            return project.tarTree(project.resources.gzip(srcArchive))
+        } else if(name.endsWith('.tar.bz2') || name.endsWith('.tbz')) {
+            return project.tarTree(project.resources.bzip2(srcArchive))
+        }
+
+        throw new IllegalArgumentException("${name} is not a supported archive type")
+
     }
 
 

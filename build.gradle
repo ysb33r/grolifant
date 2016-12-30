@@ -1,5 +1,6 @@
 plugins {
     id 'groovy'
+    id 'maven'
 }
 
 group 'org.ysb33r.gradle'

@@ -135,9 +135,7 @@ abstract class AbstractDistributionInstaller {
         this.logger = new Logger(project.logging.level >= LogLevel.INFO)
 
         downloader = new Download(logger,distributionName,INSTALLER_VERSION)
-        configuration = new WrapperConfiguration()
-        configuration.distribution = uriFromVersion(distributionVersion)
-        configuration.distributionPath = configuration.zipPath = basePath
+        this.basePath = basePath
     }
 
     protected File getAndVerifyDistributionRoot(final File distDir, final String distributionDescription) {
@@ -226,6 +224,9 @@ Expected checksum: ${expectedSum}
      * @return Location of distribution
      */
     @PackageScope File getDistFromCache()  {
+        final WrapperConfiguration configuration = new WrapperConfiguration()
+        configuration.distribution = uriFromVersion(distributionVersion)
+        configuration.distributionPath = configuration.zipPath = basePath
 
         final URI distributionUrl = configuration.getDistribution()
         final String distributionSha256Sum = configuration.getDistributionSha256Sum()
@@ -310,7 +311,7 @@ Expected checksum: ${expectedSum}
     private File downloadRoot
     private final List<String> execPatterns = []
     private final IDownload downloader
-    private final WrapperConfiguration configuration
+    private final String basePath
     private final ExclusiveFileAccessManager exclusiveFileAccessManager = new ExclusiveFileAccessManager(120000, 200)
 
 }

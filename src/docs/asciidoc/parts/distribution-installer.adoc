@@ -5,7 +5,7 @@ There are quite a number of occasions where it would be useful to download vario
 The link:{groovydoc}/AbstractDistributionInstaller.html[AbstractDistributionInstaller] abstract class provides the base for plugin developers to add such functionality to their plugins without too much trouble.
 
 === Getting started
-
+[[GettingStarted]]
 Extend link:{groovydoc}/AbstractDistributionInstaller.html[AbstractDistributionInstaller]
 
 .TestInstaller.groovy
@@ -21,7 +21,7 @@ include::{testdir}/DistributionInstallerSpec.groovy[tags=test_installer]
 
 The download is invoked by calling the link:{groovydoc}/AbstractDistributionInstaller.html#getDistributionRoot()[getDistributionRoot] method.
 
-THe above example uses Groovy to implement an installer class, but you can use Java, Kotlin or any other JVM-language that works for writing Gradle plugins.
+The above example uses Groovy to implement an installer class, but you can use Java, Kotlin or any other JVM-language that works for writing Gradle plugins.
 
 === How it works
 
@@ -29,8 +29,87 @@ When link:{groovydoc}/AbstractDistributionInstaller.html#getDistributionRoot()[g
 
 [source,groovy]
 ----
-include::{sourcedir}/AbstractDistributionInstaller.groovy[tags=download_logic]
+include::{sourcedir}/AbstractDistributionInstaller.groovy[tags=download_logic,indent=0]
 ----
-<1> If a custom location location is specified, look there first.
+<1> If a custom location location is specified, look there first for the specific version
 <2> If {sdkman} has been enabled, look if it has an available distribution.
 <3> Try to get it from cache. If not in cache try to download it.
+
+=== Marking files executable
+
+Files in some distributed archives are platform-agnostic and it is necessary to mark specific files as executable after unpacking. The link:{groovydoc}/AbstractDistributionInstaller.html#addExecPattern(java.lang.String)[addExecPattern] method can be used for this purpose.
+
+[source,groovy]
+----
+include::{testdir}/DistributionInstallerSpec.groovy[tags="installer_init,installer_execpattern",indent=0]
+----
+<1> Assuming the `TestInstaller` from <<GettingStarted,Getting Started>>, this example will mark all shell files in the distribution as executable once the archive has been unpacked.
+
+Patterns are ANT-style patterns as is common in a number of Gradle APIs.
+
+=== Search in custom locations
+
+The link:{groovydoc}/AbstractDistributionInstaller.html#locateDistributionInCustomLocation(java.lang.String)[locateDistributionInCustomLocation] method can be used for setting up a search in specific locations.
+
+For example a person implementing a Ceylon language plugin might want to look in the `~/.ceylon` folder for an existing installation of a specific version.
+
+This optional implementation is completely left up to the plugin author as it will be very specific to a distribution. The method should return `null` if nothing was found.
+
+=== Changing the download and unpack root location
+
+By default downloaded distributons will be placed in a subfolder below the Gradle user home directory as specified during construction time. It is possible, especially for testing purposes, to use a root folder other than Gradle user home by setting the link:{groovydoc}/AbstractDistributionInstaller.html#setDownloadRoot(java.io.File)[downloadRoot]
+
+=== Utilising SDK Manager
+
+{sdkman} is a very useful local SDK installation and management tool and when specific SDKs or distributions are already supported it makes sense to re-use them in order to save on download time.
+
+All that is required is to provide the {sdkman} candidate name using the link:{groovydoc}/AbstractDistributionInstaller.html#setSdkManCandidateName(java.lang.String)[setSdkManCandidateName] method.
+
+.Utilising SDK Manager
+[source,groovy]
+----
+installer.sdkManCandidateName = 'ceylon' // <1>
+----
+<1> Sets the candidate name for a distribution as it will be known to {sdkman}. In this example the Ceylon language distribution is used.
+
+=== Checksum
+[[Checksum]]
+By default the installer will not check any values, but calling link:{groovydoc}/AbstractDistributionInstaller.html#setChecksum(java.lang.String)[setChecksum] will force the installer to perform a check after downloading and before unpacking. It is possible to invoke a behavioural change by <<Verification,overriding verification>>.
+
+[source,groovy]
+----
+include::{testdir}/DistributionInstallerSpec.groovy[tags="installer_init,installer_checksum",indent=0]
+----
+<1> Provide SHA-256 checksum string
+
+Only SHA-256 checksums are supported. if you need something else you will need to <<Verification,override verification>> and provide your own checksum test.
+
+=== Advanced: Override unpacking
+
+By default, `AbstractDistributionInstaller` already knows how to unpack ZIPs and TARs of a varierty of compressions. If something else is required, then the link:{groovydoc}++/AbstractDistributionInstaller.html#unpack(java.io.File, java.io.File)++[unpack] method can be overridden.
+
+=== Advanced: Override verification
+[[Verification]]
+Verification of a downloaded distribution occurs in two parts:
+
+* If a <<Checksum,checksum>> is supplied, the downloaded archive is validated against the checksum. The standard implementation will only check SHA-256 checksums.
+* The unpacked distribution is then checked for sanity. In the default implementation this is simply to check that only one directory was unpacked below the distribution directory. The latter is effectively just replicating the Gradle Wrapper behaviour.
+
+Once again it is possible to customise this behaviour if your distribution have different needs. In this case there are two protected methods than can be overridden:
+
+* link:{groovydoc}++/AbstractDistributionInstaller.html#verifyDownloadChecksum(java.lang.String, java.io.File, java.lang.String)++[verifyDownloadChecksum] - Override this method to take care of handling checksums. The method, when called, will be passed the URI where the distribution was downlaoded from, the location of the archive on the filesystem and the expected checksum. It is possible to pass `null` for the latter which means that no checksum is available.
+* link:{groovydoc}++/AbstractDistributionInstaller.html#getAndVerifyDistributionRoot(java.io.File, java.lang.String)++[getAndVerifyDistributionRoot] - This validates the distribution on disk. When called, it is passed the the location where the distribution was unpacked into. The method should return the effective home directory of the distribution.
+
+NOTE: In the case of `getAndVerifyDistributionRoot` it can be very confusing sometimes as to what the `distDir` is and what should be returned. The easiest is to explain this by looking at how Gradle wrappers are stored. For instance for Gradle 3.0 the `distDir` might be something like `~/.gradle/wrapper/dists/gradle-3.0-bin/2z3tfybitalx2py5dr8rf2mti/` whereas the return directory would be `~/.gradle/wrapper/dists/gradle-3.0-bin/2z3tfybitalx2py5dr8rf2mti/gradle-3.0`.
+
+=== Helper and other protected API methods
+
+Access to the following Gradle objects are available:
+
+* `Project` - link:{groovydoc}/AbstractDistributionInstaller.html#getProject()[getProject]
+* 'Logger` - link:{groovydoc}/AbstractDistributionInstaller.html#getLogger()[getLogger]
+
+Access to (unpacked) directory content:
+
+* link:{groovydoc}/AbstractDistributionInstaller.html#listDirs(java.io.File)[listDirs] provides a listing of directories directly below an unpacked distribution. It can also be used for any directory if the intent is to see which child directories are available.
+

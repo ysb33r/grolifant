@@ -1,16 +1,36 @@
 == Distribution Installer
 
-There are quite a number of occasions where it would be useful to download various versions SDK or distributions from a variety of sources and then install them locally without having to affect the environment of a user. The Gradle Wrapper is already a good example of this. Obvisouly it would be good if one could also utilise otehr solutions that manage distributions and SDKs on a per-user basis such as the excellent http://sdkman.io[SDKManager].
+There are quite a number of occasions where it would be useful to download various versions SDK or distributions from a variety of sources and then install them locally without having to affect the environment of a user. The Gradle Wrapper is already a good example of this. Obviously it would be good if one could also utilise otehr solutions that manage distributions and SDKs on a per-user basis such as the excellent {sdkman}.
 
-The `AbstractDistributionInstaller` provides the base for plugin developers to add such functionality to their plugins without too much trouble.
+The link:{groovydoc}/AbstractDistributionInstaller.html[AbstractDistributionInstaller] abstract class provides the base for plugin developers to add such functionality to their plugins without too much trouble.
 
 === Getting started
+
+Extend link:{groovydoc}/AbstractDistributionInstaller.html[AbstractDistributionInstaller]
 
 .TestInstaller.groovy
 [source,groovy]
 ----
 class TestInstaller extends AbstractDistributionInstaller {
-  include::{testdir}/DistributionINstallerSpec.groovy[tags=test_installer]
+include::{testdir}/DistributionInstallerSpec.groovy[tags=test_installer]
 }
-
 ----
+<1> The installer needs to be provided with a human-readable name, the version of the distribution, a relative path below the installation for installing this type of distribution and a reference to an exiting Gradle `Project` instance.
+<2> The `uriFromVersion` method is used to returned an appropriate URI where to download the specific version of distribution from. Supported protocols are all those supported by Gradle Wrapper and includes `file`, `http(s)` and `ftp`.
+<3> Use code appropriate to your specific distribution to calculate the URI.
+
+The download is invoked by calling the link:{groovydoc}/AbstractDistributionInstaller.html#getDistributionRoot()[getDistributionRoot] method.
+
+THe above example uses Groovy to implement an installer class, but you can use Java, Kotlin or any other JVM-language that works for writing Gradle plugins.
+
+=== How it works
+
+When link:{groovydoc}/AbstractDistributionInstaller.html#getDistributionRoot()[getDistributionRoot] is called, it effectively uses the following logic
+
+[source,groovy]
+----
+include::{sourcedir}/AbstractDistributionInstaller.groovy[tags=download_logic]
+----
+<1> If a custom location location is specified, look there first.
+<2> If {sdkman} has been enabled, look if it has an available distribution.
+<3> Try to get it from cache. If not in cache try to download it.

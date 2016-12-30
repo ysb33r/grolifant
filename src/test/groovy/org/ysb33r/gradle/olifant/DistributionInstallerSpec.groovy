@@ -59,12 +59,12 @@ class DistributionInstallerSpec extends Specification {
         static final String DISTVER  = '0.1'
 
         TestInstaller(Project project) {
-            super('Test Distribution',DISTVER,DISTPATH,project)
+            super('Test Distribution',DISTVER,DISTPATH,project) // <1>
         }
 
         @Override
-        URI uriFromVersion(String version) {
-            TESTDIST_DIR.toURI().resolve("testdist-${DISTVER}.zip")
+        URI uriFromVersion(String version) { // <2>
+            TESTDIST_DIR.toURI().resolve("testdist-${DISTVER}.zip") // <3>
         }
         // end::test_installer[]
     }

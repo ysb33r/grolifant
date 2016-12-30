@@ -3,8 +3,10 @@
 :doctype: book
 :toc: right
 :icons: font
+:sdkman: http://sdkman.io[SDKManager]
 :sourcedir: {projectdir}/src/main/groovy/org/ysb33r/gradle/olifant
 :testdir: {projectdir}/src/main/groovy/org/ysb33r/gradle/olifant
+:groovydoc: ../../{revnumber}/org/ysb33r/gradle/olifant
 
 include::parts/distribution-installer.adoc[]
 

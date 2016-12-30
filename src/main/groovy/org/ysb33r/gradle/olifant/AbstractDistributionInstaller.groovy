@@ -73,13 +73,15 @@ abstract class AbstractDistributionInstaller {
      */
     File getDistributionRoot() {
 
-        File location = locateDistributionInCustomLocation(distributionVersion)
+        // tag::download_logic[]
+        File location = locateDistributionInCustomLocation(distributionVersion) // <1>
 
-        if(location == null && this.sdkManCandidateName)  {
+        if(location == null && this.sdkManCandidateName)  { // <2>
             location = getDistFromSdkMan()
         }
 
-        location ?: getDistFromCache()
+        location ?: getDistFromCache() // <3>
+        // end::download_logic[]
     }
 
     /** Override this method to provide alternative means to look for distributions.

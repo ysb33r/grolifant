@@ -1,0 +1,3 @@
+== What's in a name
+
+*Grolifant* is a concatenation of *Gr* for Gradle and *olifant*, which is the Afrikaans word for elephant. The latter is of course the the main part of the curretn Gradle logo.

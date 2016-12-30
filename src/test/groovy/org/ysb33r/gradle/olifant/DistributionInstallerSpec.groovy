@@ -27,15 +27,22 @@ class DistributionInstallerSpec extends Specification {
 
     static final File TESTDIST_DIR = new File( System.getProperty('TEST_RESOURCES_DIR') ?: '.', 'src/test/resources')
 
+    Project project = ProjectBuilder.builder().build()
+    File baseDir = project.gradle.gradleUserHomeDir
+
     def "Download a distribution from a URL"() {
 
-        given:
-        Project project = ProjectBuilder.builder().build()
-        File baseDir = project.gradle.gradleUserHomeDir
+        given: 'A basic distribution'
+        // tag::installer_init[]
         TestInstaller installer = new TestInstaller(project)
-        installer.addExecPattern '**/*.sh'
+        // end::installer_init[]
 
-        when:
+        when: 'Exec patterns are set'
+        // tag::installer_execpattern[]
+        installer.addExecPattern '**/*.sh' // <1>
+        // end::installer_execpattern[]
+
+        and: 'the distribution is downloaded'
         File downloaded = installer.distributionRoot
         boolean execCheck = AbstractDistributionInstaller.IS_WINDOWS && new File(downloaded,'test.sh').exists()
 
@@ -43,13 +50,56 @@ class DistributionInstallerSpec extends Specification {
             execCheck = Files.isExecutable(new File(downloaded,'test.sh').toPath())
         }
 
-        then:
+        then: 'The distribution should be unpacked'
         downloaded.exists()
         downloaded.absolutePath.contains(TestInstaller.DISTPATH)
         downloaded.absolutePath.endsWith("testdist-${TestInstaller.DISTVER}")
 
         new File(downloaded,'test.bat').exists()
+
+        and: 'Execution permissions should be set on appropriate operating systems'
         execCheck == true
+    }
+
+    def 'Checksums should be checked if supplied'() {
+        given: 'A basic distribution'
+        TestInstaller installer = new TestInstaller(project)
+
+        when: 'A checksum is set'
+        // tag::installer_checksum[]
+        installer.checksum = 'b1741e3d2a3f7047d041c79d018cf55286d1168fd6f0533e7fae897478abcdef'  // <1>
+        // end::installer_checksum[]
+
+        and: 'the distribution is downloaded'
+        File downloaded = installer.distributionRoot
+
+        then: 'it should fail by throwing an exception, because the checksum did not match'
+        thrown(ChecksumFailedException)
+
+        when: 'A correct checksum is set'
+        installer = new TestInstaller(project)
+        installer.checksum = new File(TESTDIST_DIR,'testdist-0.1.zip.sha256').text.trim()
+
+        and: 'The distribution is downloaded'
+        downloaded = installer.distributionRoot
+
+        then: 'The distribution should be unpacked'
+        downloaded.exists()
+        downloaded.absolutePath.contains(TestInstaller.DISTPATH)
+        downloaded.absolutePath.endsWith("testdist-${TestInstaller.DISTVER}")
+
+        when: 'An invalid checksum is provided (not correct length)'
+        installer = new TestInstaller(project)
+        installer.checksum = 'abcde'
+
+        then: 'An exception will be raised'
+        thrown(IllegalArgumentException)
+
+        when: 'An invalid checksum is provided (bad characters)'
+        installer.checksum = '_'.multiply(64)
+
+        then: 'An exception will be raised'
+        thrown(IllegalArgumentException)
     }
 
     static class TestInstaller extends AbstractDistributionInstaller {

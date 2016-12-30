@@ -6,3 +6,11 @@ The `AbstractDistributionInstaller` provides the base for plugin developers to a
 
 === Getting started
 
+.TestInstaller.groovy
+[source,groovy]
+----
+class TestInstaller extends AbstractDistributionInstaller {
+  include::{testdir}/DistributionINstallerSpec.groovy[tags=test_installer]
+}
+
+----

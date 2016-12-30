@@ -54,6 +54,7 @@ class DistributionInstallerSpec extends Specification {
 
     static class TestInstaller extends AbstractDistributionInstaller {
 
+        // tag::test_installer[]
         static final String DISTPATH = 'foo/bar'
         static final String DISTVER  = '0.1'
 
@@ -65,5 +66,6 @@ class DistributionInstallerSpec extends Specification {
         URI uriFromVersion(String version) {
             TESTDIST_DIR.toURI().resolve("testdist-${DISTVER}.zip")
         }
+        // end::test_installer[]
     }
 }

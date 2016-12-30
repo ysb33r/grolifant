@@ -2,9 +2,10 @@ plugins {
     id 'groovy'
     id 'maven'
     id 'org.ysb33r.bintray' version '1.5'
+    id 'org.ysb33r.gradletest' version '1.0-beta5'
     id 'com.github.hierynomus.license' version '0.13.1'
     id 'org.asciidoctor.convert' version '1.5.3'
-    id 'org.ysb33r.gradletest' version '1.0-beta5'
+    id "org.ajoberstar.git-publish" version "0.1.0"
 }
 
 import org.asciidoctor.gradle.AsciidoctorTask
@@ -18,7 +19,7 @@ ext {
     bintrayOwner = 'ysb33r'
     bintrayRepo = 'grysb33r'
     moduleName = rootProject.name
-    websitePublishFolder = "${projectDir}/website"
+    websitePublishFolder = "${buildDir}/website"
 
     notSnapshot = {!version.endsWith("SNAPSHOT") }
 
@@ -129,7 +130,7 @@ task generateDocVersionsTable( type : Copy ) {
                 return null
             }
             final String docsLink = "link:${line}/docs/product-documentation.html[Docs]"
-            final String apiLink  = line == '0.5.5' ? '' : "link:${line}/api/index.html[Groovydoc]"
+            final String apiLink  = "link:${line}/api/index.html[Groovydoc]"
             final String clogLink = "link:${line}/docs/changelog.html[Changelog]"
             return "a|*${line}*|${docsLink}|${apiLink}|${clogLink}"
         }
@@ -201,4 +202,35 @@ task installDocs( type : Copy ) {
     }
 
     onlyIf notSnapshot
+}
+
+gitPublish {
+
+    branch = 'gh-pages'
+//    repoUri = ''
+
+    contents {
+        from installDocs
+    }
+
+    file('src/docs/landingPage/display-versions.txt').eachLine { line ->
+        if(!line.startsWith('//') && !line.startsWith('#') && line != project.version) {
+            preserve {
+                include "${line}/**"
+            }
+        }
+    }
+}
+
+[gitPublishReset, gitPublishCopy, gitPublishCommit, gitPublishPush].each { task ->
+    task.inputs.file 'src/docs/landingPage/display-versions.txt'
+    task.dependsOn installDocs
+    task.onlyIf notSnapshot
+}
+
+task release {
+    group "Release"
+    description "Lifecycle task for release a new version"
+    onlyIf notSnapshot
+    dependsOn build, uploadArchives, gitPublish
 }

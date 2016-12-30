@@ -1,0 +1,9 @@
+= CHANGELOG
+
+== Roadmap - v0.1
+
+// tag::changelog[]
+* Distribution Installer base class.
+* `StringUtils.stringize` - convert object or closure to a string.
+* `UriUtils.urize` - convert object or closure to a URI.
+// end::changelog[]

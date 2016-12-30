@@ -22,15 +22,20 @@ class UriUtils {
                 return urize(((Closure)uriThingy).call())
             default:
                 if (uriThingy.metaClass.respondsTo(uriThingy,'toURI')) {
-                    return convertWithNativeUriConversion(uriThingy)
+                    return convertWithNativeUriMethod(uriThingy)
                 } else {
                     return urize(StringUtils.stringize(uriThingy))
                 }
         }
     }
 
+    /** Helper method to call toURI method on object
+     *
+     * @param uriThingy Object to convert to URI
+     * @return URI
+     */
     @CompileDynamic
-    private static URI convertWithNativeUriConversion(Object uriThingy) {
+    private static URI convertWithNativeUriMethod(Object uriThingy) {
         uriThingy.toURI()
     }
 }

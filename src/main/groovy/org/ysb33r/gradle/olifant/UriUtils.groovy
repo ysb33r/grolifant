@@ -22,7 +22,9 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class UriUtils {
 
-    /** Attempts to convert object to a URI. Will hand
+    /** Attempts to convert object to a URI.
+     *
+     * Closures can be passed and will be evaluated. Result will then be converted to a URI.
      *
      * @param uriThingy Anything that could be converted to a URI
      * @return URI object

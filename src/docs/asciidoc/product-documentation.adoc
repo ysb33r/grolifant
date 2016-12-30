@@ -14,4 +14,6 @@ include::parts/distribution-installer.adoc[]
 
 include::parts/stringutils.adoc[]
 
+include::parts/uriutils.adoc[]
+
 include::parts/grolifant.adoc[]

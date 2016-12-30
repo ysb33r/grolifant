@@ -29,6 +29,10 @@ class StringUtils {
      * @return A string object
      */
     static String stringize(final Object stringy) {
-        CollectionUtils.stringize([stringy])[0]
+        if (stringy instanceof Closure) {
+            CollectionUtils.stringize([((Closure)stringy).call()])[0]
+        } else {
+            CollectionUtils.stringize([stringy])[0]
+        }
     }
 }

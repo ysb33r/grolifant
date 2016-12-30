@@ -38,6 +38,14 @@ dependencies {
     }
 }
 
+sourceSets {
+    test {
+        groovy {
+            srcDir file('src/gradleTest/runtimeCompatibility/src/test/groovy')
+        }
+    }
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
@@ -63,6 +71,13 @@ jar {
 
 groovydoc {
     destinationDir file("${buildDir}/docs/api")
+}
+
+gradleTest {
+    versions '3.2.1'
+    systemProperties GROLIFANT_VERSION_UNDER_TEST : jar.archivePath.absolutePath
+    dependsOn jar
+    onlyIf {!gradle.startParameter.offline}
 }
 
 uploadArchives  {
@@ -232,5 +247,6 @@ task release {
     group "Release"
     description "Lifecycle task for release a new version"
     onlyIf notSnapshot
-    dependsOn build, uploadArchives, gitPublish
+    onlyIf {!gradle.startParameter.offline}
+    dependsOn build, uploadArchives, gitPublishPush
 }

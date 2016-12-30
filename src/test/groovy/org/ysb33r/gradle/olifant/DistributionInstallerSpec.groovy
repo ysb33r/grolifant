@@ -20,10 +20,6 @@ import spock.lang.Specification
 
 import java.nio.file.Files
 
-
-/**
- * @author Schalk W. Cronjé
- */
 class DistributionInstallerSpec extends Specification {
 
     static final File TESTDIST_DIR = new File( System.getProperty('TEST_RESOURCES_DIR') ?: '.', 'src/test/resources')

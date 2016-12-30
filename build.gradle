@@ -1,21 +1,31 @@
 plugins {
     id 'groovy'
     id 'maven'
+    id 'org.ysb33r.bintray' version '1.5'
+    id 'com.github.hierynomus.license' version '0.13.1'
+    id 'org.asciidoctor.convert' version '1.5.3'
+    id 'org.ysb33r.gradletest' version '1.0-beta5'
 }
 
 group 'org.ysb33r.gradle'
 version '0.1-SNAPSHOT'
-
-
 sourceCompatibility = 1.7
+
+ext {
+    bintrayOwner = 'ysb33r'
+    bintrayRepo = 'grysb33r'
+    moduleName = rootProject.name
+    websitePublishFolder = "${projectDir}/website"
+
+    notSnapshot = {!version.endsWith("SNAPSHOT") }
+
+    depSpock = "org.spockframework:spock-core:1.0-groovy-${GroovySystem.version.replaceAll(/\.\d+$/,'')}"
+}
 
 repositories {
     jcenter()
 }
 
-ext {
-    depSpock = "org.spockframework:spock-core:1.0-groovy-${GroovySystem.version.replaceAll(/\.\d+$/,'')}"
-}
 
 dependencies {
     compile gradleApi()
@@ -23,4 +33,58 @@ dependencies {
     testCompile (depSpock) {
         exclude module : 'groovy-all'
     }
+}
+
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+    description "An archive of the JavaDocs for Maven Central"
+    classifier "javadoc"
+    from groovydoc //Javadoc
+}
+
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': moduleName, 'Implementation-Version': version
+    }
+}
+
+uploadArchives  {
+    repositories {
+        bintrayMavenDeployer {
+            username          project.properties.bintrayUserName
+            apiKey            project.properties.bintrayApiKey
+            repoOwner         bintrayOwner
+            repoName          bintrayRepo
+            packageName       moduleName
+            description       'Library of common utilities in support of building Gradle plugins'
+            tags              'plugins','gradle'
+            licenses          'Apache-2.0'
+            vcsUrl            'https://github.com/ysb33r/grolifant.git'
+            autoCreatePackage true
+            updatePackage     true
+        }
+    }
+
+    onlyIf notSnapshot
+    mustRunAfter check
+}
+
+license {
+    header = rootProject.file('config/HEADER')
+    strictCheck = true
+    ignoreFailures = false
+    ext.year = '2016 - 2017'
+    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/*.md','**/*.properties'])
+    mapping 'gradle', 'SLASHSTAR_STYLE'
 }

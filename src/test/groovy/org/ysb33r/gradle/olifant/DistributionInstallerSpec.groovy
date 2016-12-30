@@ -14,6 +14,7 @@
 package org.ysb33r.gradle.olifant
 
 import org.gradle.api.Project
+import org.gradle.internal.impldep.org.testng.annotations.TestInstance
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
@@ -59,6 +60,23 @@ class DistributionInstallerSpec extends Specification {
 
         and: 'Execution permissions should be set on appropriate operating systems'
         execCheck == true
+    }
+
+    def "Download a #ext from a URL"() {
+
+        given: 'A basic distribution'
+        TestInstallerForVariousFormats installer = new TestInstallerForVariousFormats(ext,project)
+
+        when: 'The #ext based distribution is downloaded'
+        File downloaded = installer.distributionRoot
+
+        then: 'The distribution should be unpacked'
+        downloaded.exists()
+        downloaded.absolutePath.contains(TestInstallerForVariousFormats.DISTPATH)
+        downloaded.absolutePath.endsWith("testdist-${TestInstallerForVariousFormats.DISTVER}")
+
+        where:
+        ext << [ 'tar','tar.gz','tgz','tar.bz2', 'tbz']
     }
 
     def 'Checksums should be checked if supplied'() {
@@ -117,5 +135,22 @@ class DistributionInstallerSpec extends Specification {
             TESTDIST_DIR.toURI().resolve("testdist-${DISTVER}.zip") // <3>
         }
         // end::test_installer[]
+    }
+
+    static class TestInstallerForVariousFormats extends AbstractDistributionInstaller {
+
+        static final String DISTPATH = TestInstaller.DISTPATH
+        static final String DISTVER  = TestInstaller.DISTVER
+        final String ext
+
+        TestInstallerForVariousFormats(final String extension,Project project) {
+            super('Test Distribution',DISTVER,DISTPATH,project)
+            ext = extension
+        }
+
+        @Override
+        URI uriFromVersion(String version) {
+            TESTDIST_DIR.toURI().resolve("testdist-${DISTVER}.${ext}")
+        }
     }
 }

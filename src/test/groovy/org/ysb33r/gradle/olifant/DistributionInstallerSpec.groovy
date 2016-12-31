@@ -49,7 +49,7 @@ class DistributionInstallerSpec extends Specification {
 
         then: 'The distribution should be unpacked'
         downloaded.exists()
-        downloaded.absolutePath.contains(TestInstaller.DISTPATH)
+        downloaded.absolutePath.contains(distPathString(TestInstaller.DISTPATH))
         downloaded.absolutePath.endsWith("testdist-${TestInstaller.DISTVER}")
 
         new File(downloaded,'test.bat').exists()
@@ -69,7 +69,7 @@ class DistributionInstallerSpec extends Specification {
 
         then: 'The distribution should be unpacked'
         downloaded.exists()
-        downloaded.absolutePath.contains(TestInstallerForVariousFormats.DISTPATH)
+        downloaded.absolutePath.contains(distPathString(TestInstallerForVariousFormats.DISTPATH))
         downloaded.absolutePath.endsWith("testdist-${TestInstallerForVariousFormats.DISTVER}")
 
         where:
@@ -100,7 +100,7 @@ class DistributionInstallerSpec extends Specification {
 
         then: 'The distribution should be unpacked'
         downloaded.exists()
-        downloaded.absolutePath.contains(TestInstaller.DISTPATH)
+        downloaded.absolutePath.contains(distPathString(TestInstaller.DISTPATH))
         downloaded.absolutePath.endsWith("testdist-${TestInstaller.DISTVER}")
 
         when: 'An invalid checksum is provided (not correct length)'
@@ -149,5 +149,9 @@ class DistributionInstallerSpec extends Specification {
         URI uriFromVersion(String version) {
             TESTDIST_DIR.toURI().resolve("testdist-${DISTVER}.${ext}")
         }
+    }
+
+    String distPathString(final String s) {
+        AbstractDistributionInstaller.IS_WINDOWS ? s.replaceAll(~/\//,'\\\\') : s
     }
 }

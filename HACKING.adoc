@@ -1,0 +1,21 @@
+= Contributing
+
+== Development
+
+== Release process
+
+Remove the `-SNAPSHOT` from the version.
+
+[source,bash]
+----
+  $ ./gradlew release
+----
+
+This should run all unit tests and compatibility tests, publish binaries to Bintray, generate the documentation and pusbh to `gh-pages`.
+
+=== After release
+
+* Update `development` branch to next version and add `-SNAPSHOT`.
+* Update `CHANGELOG.adoc`:
+** Add a raodmap section for the next version
+** Move the `tag::changelog[]` asciidoctor include block

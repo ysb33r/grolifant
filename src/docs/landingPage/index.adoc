@@ -4,11 +4,12 @@
 
 A library to Support Gradle Plugin Development.
 
-If has been tested usieng https://github.com/ysb33r/gradleTest[GradleTest] for a wide range of compatibility. The test matrix for this release was
+If has been tested using https://github.com/ysb33r/gradleTest[GradleTest] for a wide range of compatibility. The test matrix for this release was
 
+.GradleTest version configuration
 [source,groovy]
 ----
-include::{includetopdir}/build.gradle[tags=gradleTestVersions]
+include::{includetopdir}/build.gradle[tags=gradleTestVersions,indent=0]
 ----
 
 

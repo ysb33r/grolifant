@@ -22,4 +22,6 @@ import org.gradle.util.GradleVersion
 @CompileStatic
 class LegacyLevel {
     static final boolean PRE_2_2 = GradleVersion.current() < GradleVersion.version('2.2')
+    static final boolean PRE_2_6 = GradleVersion.current() < GradleVersion.version('2.6')
+    static final boolean PRE_3_1 = GradleVersion.current() < GradleVersion.version('3.1')
 }

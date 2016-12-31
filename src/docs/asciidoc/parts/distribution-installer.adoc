@@ -104,12 +104,8 @@ NOTE: In the case of `getAndVerifyDistributionRoot` it can be very confusing som
 
 === Helper and other protected API methods
 
-Access to the following Gradle objects are available:
 
-* `Project` - link:{groovydoc}/AbstractDistributionInstaller.html#getProject()[getProject]
-* 'Logger` - link:{groovydoc}/AbstractDistributionInstaller.html#getLogger()[getLogger]
-
-Access to (unpacked) directory content:
-
+* link:{groovydoc}/AbstractDistributionInstaller.html#getProject()[getProject] provides access to the associated Gradle `Project` object.
 * link:{groovydoc}/AbstractDistributionInstaller.html#listDirs(java.io.File)[listDirs] provides a listing of directories directly below an unpacked distribution. It can also be used for any directory if the intent is to see which child directories are available.
+* link:{groovydoc}/AbstractDistributionInstaller.html#getLogger()[getLogger] provides access to a simple `stdout` logger.
 

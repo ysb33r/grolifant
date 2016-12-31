@@ -22,7 +22,12 @@ import org.gradle.api.Project
 import org.gradle.api.file.FileCopyDetails
 import org.gradle.api.file.FileTree
 import org.gradle.api.logging.LogLevel
-import org.gradle.wrapper.*
+import org.gradle.wrapper.Download
+import org.gradle.wrapper.ExclusiveFileAccessManager
+import org.gradle.wrapper.IDownload
+import org.gradle.wrapper.PathAssembler
+import org.gradle.wrapper.WrapperConfiguration
+import org.ysb33r.gradle.olifant.internal.LegacyLevel
 
 import java.security.MessageDigest
 import java.util.concurrent.Callable
@@ -120,7 +125,7 @@ abstract class AbstractDistributionInstaller {
      *
      * @return Wrapper logger instance
      */
-    protected Logger getLogger() {
+    protected ProgressLogger getLogger() {
         this.logger
     }
 
@@ -140,10 +145,11 @@ abstract class AbstractDistributionInstaller {
         this.distributionName = distributionName
         this.distributionVersion = distributionVersion
         this.project = project
-        this.logger = new Logger(project.logging.level >= LogLevel.INFO)
-
-        downloader = new Download(logger,distributionName,INSTALLER_VERSION)
         this.basePath = basePath
+
+        List<?> bootstrap = AbstractDistributionInstaller.createDownloader(distributionName,project)
+        this.logger = (ProgressLogger)(bootstrap[0])
+        this.downloader = (IDownload)(bootstrap[1])
     }
 
     /** Validates that the unpacked distirbution is good.
@@ -234,7 +240,13 @@ abstract class AbstractDistributionInstaller {
             into destDir
 
             if(!IS_WINDOWS && !patterns.empty) {
-                filesMatching (patterns,setExecMode)
+                if(LegacyLevel.PRE_3_1) {
+                    for( String pat in patterns) {
+                        filesMatching (pat,setExecMode)
+                    }
+                } else {
+                    filesMatching (patterns,setExecMode)
+                }
             }
         }
     }
@@ -254,10 +266,7 @@ abstract class AbstractDistributionInstaller {
      * @return Location of distribution
      */
     @PackageScope File getDistFromCache()  {
-        final WrapperConfiguration configuration = new WrapperConfiguration()
-        configuration.distribution = uriFromVersion(distributionVersion)
-        configuration.distributionPath = configuration.zipPath = basePath
-        configuration.distributionSha256Sum = this.checksum
+        final WrapperConfiguration configuration = getNewWrapperConfiguration()
 
         final URI distributionUrl = configuration.getDistribution()
 
@@ -265,6 +274,7 @@ abstract class AbstractDistributionInstaller {
         final PathAssembler.LocalDistribution localDistribution = pathAssembler.getDistribution(configuration)
         final File distDir = localDistribution.distributionDir
         final File localCompressedFile = localDistribution.zipFile
+        final String expectedChecksum = this.checksum
 
         return exclusiveFileAccessManager.access(localCompressedFile, new Callable<File>() {
             File call() throws Exception {
@@ -284,7 +294,7 @@ abstract class AbstractDistributionInstaller {
 
                     File tmpCompressedFile = new File(localCompressedFile.getParentFile(), localCompressedFile.getName() + ".part")
                     tmpCompressedFile.delete()
-                    logger.log("Downloading " + safeDistributionUrl)
+                    logger.log("Downloading ${safeDistributionUrl}")
                     downloader.download(distributionUrl, tmpCompressedFile)
                     tmpCompressedFile.renameTo(localCompressedFile)
                 }
@@ -295,7 +305,7 @@ abstract class AbstractDistributionInstaller {
                     dir.deleteDir()
                 }
 
-                verifyDownloadChecksum(configuration.getDistribution().toString(), localCompressedFile, configuration.distributionSha256Sum)
+                verifyDownloadChecksum(configuration.getDistribution().toString(), localCompressedFile, expectedChecksum)
 
                 logger.log("Unpacking " + localCompressedFile.getAbsolutePath() + " to " + distDir.getAbsolutePath())
                 unpack(localCompressedFile, distDir)
@@ -351,8 +361,76 @@ abstract class AbstractDistributionInstaller {
 
     }
 
+    private WrapperConfiguration getNewWrapperConfiguration() {
+        final WrapperConfiguration configuration = new WrapperConfiguration()
+        configuration.distribution = uriFromVersion(distributionVersion)
+        configuration.distributionPath = configuration.zipPath = basePath
 
-    private Logger logger
+        return setConfigChecksum(configuration)
+    }
+
+    @CompileDynamic
+    private WrapperConfiguration setConfigChecksum(WrapperConfiguration configuration) {
+        if(!LegacyLevel.PRE_2_6) {
+            configuration.distributionSha256Sum = this.checksum
+        }
+
+        return configuration
+    }
+
+    @CompileDynamic
+    private static List<?> createDownloader(final String distributionName,Project project) {
+        boolean quiet = project.logging.level < LogLevel.INFO
+        IDownload downloader
+        ProgressLogger progressLogger
+
+        Class<?> wrapperLoggerClass = null;
+        try {
+            wrapperLoggerClass = Class.forName("org.gradle.wrapper.Logger")
+        } catch( ClassNotFoundException ) {
+        }
+
+        Download.constructors.findResult { ctor ->
+            if( ctor.parameterTypes == [wrapperLoggerClass, String, String] as Class[] ) {
+                // Gradle 2.3+
+                Object wrapperLogger = wrapperLoggerClass.constructors.findResult { loggerCtor ->
+                    loggerCtor.newInstance(quiet)
+                }
+
+                progressLogger = [ log : { String msg -> wrapperLogger.log(msg)} ] as ProgressLogger
+                downloader = ctor.newInstance(wrapperLogger, distributionName, INSTALLER_VERSION)
+
+            } else if( ctor.parameterTypes == [org.gradle.api.logging.Logger, String, String] as Class[] ) {
+
+                progressLogger = new Progress(quiet)
+                downloader = ctor.newInstance(project.logger, distributionName, INSTALLER_VERSION)
+
+            } else if( ctor.parameterTypes == [String, String] as Class[] ){
+
+                progressLogger = new Progress(quiet)
+                downloader = ctor.newInstance(distributionName, INSTALLER_VERSION)
+            }
+        }
+
+        [progressLogger,downloader]
+    }
+
+
+    private static class Progress implements ProgressLogger {
+        private final boolean quiet
+
+        Progress(boolean quiet) {
+            this.quiet = quiet
+        }
+
+        void log(String message) {
+            if (!quiet) {
+                println message
+            }
+        }
+    }
+
+    private ProgressLogger logger
     private String sdkManCandidateName
     private String checksum
     private String distributionName

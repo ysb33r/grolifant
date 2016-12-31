@@ -10,6 +10,8 @@
 :compatdir: {includetopdir}/src/gradleTest/runtimeCompatibility/src/test/groovy/org/ysb33r/gradle/olifant/compatibility/testing
 :groovydoc: ../api/org/ysb33r/gradle/olifant
 
+include::parts/bootstrap.adoc[]
+
 include::parts/distribution-installer.adoc[]
 
 include::parts/stringutils.adoc[]

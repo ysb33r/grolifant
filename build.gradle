@@ -210,7 +210,9 @@ asciidoctor {
     }
 
     attributes revnumber: version,
-        includetopdir : projectDir.absolutePath
+        includetopdir : projectDir.absolutePath,
+        mavengroup : project.group,
+        mavenartifact : moduleName
 }
 
 

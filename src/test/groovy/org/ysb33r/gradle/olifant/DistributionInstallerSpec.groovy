@@ -17,6 +17,7 @@ import org.gradle.api.Project
 import org.gradle.internal.impldep.org.testng.annotations.TestInstance
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.nio.file.Files
 
@@ -57,6 +58,7 @@ class DistributionInstallerSpec extends Specification {
         execCheck == true
     }
 
+    @Unroll
     def "Download a #ext from a URL"() {
 
         given: 'A basic distribution'

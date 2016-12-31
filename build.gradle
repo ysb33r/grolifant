@@ -78,11 +78,13 @@ test {
 }
 
 gradleTest {
+    // tag::gradleTestVersions[]
     versions '2.0','2.1','2.2','2.3','2.4'
     versions '2.5', '2.6', '2.7'
     versions '2.8', '2.9', '2.10', '2.11'
     versions '2.12', '2.13', '2.14.1'
     versions '3.0', '3.1', '3.2.1'
+    // end::gradleTestVersions[]
 
     systemProperties GROLIFANT_VERSION_UNDER_TEST : jar.archivePath.absolutePath
     dependsOn jar
@@ -190,8 +192,9 @@ task landingPage( type : AsciidoctorTask ) {
     }
 
     attributes gendocdir : file("${generateDocVersionsTable.targetDir}").absolutePath,
-        compatdir : file('compatibility').absolutePath,
-        revnumber : "${version}"
+        revnumber : "${version}",
+        includetopdir : projectDir.absolutePath
+
 }
 
 asciidoctor {

@@ -1,6 +1,5 @@
 == Bootstrapping
 
-////
 The library is available on JCenter. Add the following to your Gradle build script to use it.
 
 [source,groovy]
@@ -8,24 +7,7 @@ The library is available on JCenter. Add the following to your Gradle build scri
 repositories {
   jcenter()
 }
-
-dependencies {
-  compile '{mavengroup}:{mavenartifact}:{revnumber}'
-}
 ----
-////
-
-The library is available on Bintray. Add the following to your Gradle build script to use it.
-
-.Setting the repository
-[source,groovy]
-----
-repositories {
-    maven { url 'http://dl.bintray.com/ysb33r/grysb33r' }  // <1>
-}
-
-----
-<1> It will eventually be available on JCenter
 
 .Adding Grolifant as a compile dependency
 [source,groovy,subs="attributes"]

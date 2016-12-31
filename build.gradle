@@ -115,7 +115,14 @@ license {
     strictCheck = true
     ignoreFailures = false
     ext.year = '2016 - 2017'
-    excludes(['**/*.ad', '**/*.asciidoc', '**/*.adoc', '**/*.md','**/*.properties'])
+    excludes([
+        '**/*.adoc',
+        '**/*.properties',
+        '**/*.tar*',
+        '**/*.zip*',
+        '**/*.tbz',
+        '**/*.tgz'
+    ])
     mapping 'gradle', 'SLASHSTAR_STYLE'
 }
 

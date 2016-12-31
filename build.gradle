@@ -5,13 +5,12 @@ plugins {
     id 'org.ysb33r.gradletest' version '1.0-beta5'
     id 'com.github.hierynomus.license' version '0.13.1'
     id 'org.asciidoctor.convert' version '1.5.3'
-    id "org.ajoberstar.git-publish" version "0.1.0"
 }
 
 import org.asciidoctor.gradle.AsciidoctorTask
 
 group 'org.ysb33r.gradle'
-version '0.1-SNAPSHOT'
+version '0.1'
 sourceCompatibility = 1.7
 
 
@@ -19,7 +18,7 @@ ext {
     bintrayOwner = 'ysb33r'
     bintrayRepo = 'grysb33r'
     moduleName = rootProject.name
-    websitePublishFolder = "${buildDir}/website"
+    websitePublishFolder = "${projectDir}/website"
 
     notSnapshot = {!version.endsWith("SNAPSHOT") }
 
@@ -123,10 +122,12 @@ license {
         '**/*.tar*',
         '**/*.zip*',
         '**/*.tbz',
-        '**/*.tgz'
+        '**/*.tgz',
+        '**/*CompatibilitySpec.groovy'
     ])
     mapping 'gradle', 'SLASHSTAR_STYLE'
 }
+
 
 task validateDocVersions {
     group 'Documentation'
@@ -240,34 +241,10 @@ task installDocs( type : Copy ) {
     onlyIf notSnapshot
 }
 
-gitPublish {
-
-    branch = 'gh-pages'
-//    repoUri = ''
-
-    contents {
-        from installDocs
-    }
-
-    file('src/docs/landingPage/display-versions.txt').eachLine { line ->
-        if(!line.startsWith('//') && !line.startsWith('#') && line != project.version) {
-            preserve {
-                include "${line}/**"
-            }
-        }
-    }
-}
-
-[gitPublishReset, gitPublishCopy, gitPublishCommit, gitPublishPush].each { task ->
-    task.inputs.file 'src/docs/landingPage/display-versions.txt'
-    task.dependsOn installDocs
-    task.onlyIf notSnapshot
-}
-
 task release {
     group "Release"
     description "Lifecycle task for release a new version"
     onlyIf notSnapshot
     onlyIf {!gradle.startParameter.offline}
-    dependsOn build, uploadArchives, gitPublishPush
+    dependsOn build, uploadArchives, installDocs
 }

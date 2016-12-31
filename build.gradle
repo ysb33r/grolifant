@@ -10,7 +10,7 @@ plugins {
 import org.asciidoctor.gradle.AsciidoctorTask
 
 group 'org.ysb33r.gradle'
-version '0.1'
+version '0.2-SNAPSHOT'
 sourceCompatibility = 1.7
 
 

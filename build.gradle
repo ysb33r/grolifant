@@ -73,6 +73,10 @@ groovydoc {
     destinationDir file("${buildDir}/docs/api")
 }
 
+test {
+    systemProperties COMPAT_TEST_RESOURCES_DIR : file('src/gradleTest/runtimeCompatibility/src/test/resources')
+}
+
 gradleTest {
     versions '2.0','2.1','2.2','2.3','2.4'
     versions '2.5', '2.6', '2.7'

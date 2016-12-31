@@ -25,7 +25,6 @@ class DistributionInstallerSpec extends Specification {
     static final File TESTDIST_DIR = new File( System.getProperty('TEST_RESOURCES_DIR') ?: '.', 'src/test/resources')
 
     Project project = ProjectBuilder.builder().build()
-    File baseDir = project.gradle.gradleUserHomeDir
 
     def "Download a distribution from a URL"() {
 

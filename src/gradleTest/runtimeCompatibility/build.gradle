@@ -17,6 +17,10 @@ dependencies {
     testCompile files(System.getProperty('GROLIFANT_VERSION_UNDER_TEST'))
 }
 
+test {
+    systemProperties COMPAT_TEST_RESOURCES_DIR : file('src/test/resources')
+}
+
 task runGradleTest {
     dependsOn test
 }

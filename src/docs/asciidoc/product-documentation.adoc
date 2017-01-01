@@ -4,7 +4,7 @@
 :toc: right
 :icons: font
 :source-highlighter: coderay
-:sdkman: http://sdkman.io[SDKManager]
+:sdkman: http://sdkman.io[SDKMAN!]
 :sourcedir: {includetopdir}/src/main/groovy/org/ysb33r/gradle/olifant
 :testdir: {includetopdir}/src/test/groovy/org/ysb33r/gradle/olifant
 :compatdir: {includetopdir}/src/gradleTest/runtimeCompatibility/src/test/groovy/org/ysb33r/gradle/olifant/compatibility/testing

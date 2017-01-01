@@ -59,13 +59,13 @@ This optional implementation is completely left up to the plugin author as it wi
 
 By default downloaded distributons will be placed in a subfolder below the Gradle user home directory as specified during construction time. It is possible, especially for testing purposes, to use a root folder other than Gradle user home by setting the link:{groovydoc}/AbstractDistributionInstaller.html#setDownloadRoot(java.io.File)[downloadRoot]
 
-=== Utilising SDK Manager
+=== Utilising SDKMAN!
 
 {sdkman} is a very useful local SDK installation and management tool and when specific SDKs or distributions are already supported it makes sense to re-use them in order to save on download time.
 
 All that is required is to provide the {sdkman} candidate name using the link:{groovydoc}/AbstractDistributionInstaller.html#setSdkManCandidateName(java.lang.String)[setSdkManCandidateName] method.
 
-.Utilising SDK Manager
+.Utilising SDKMAN!
 [source,groovy]
 ----
 installer.sdkManCandidateName = 'ceylon' // <1>

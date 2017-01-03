@@ -205,6 +205,8 @@ asciidoctor {
     mustRunAfter validateDocVersions
     outputDir "${buildDir}/docs/product"
     separateOutputDirs = false
+    inputs.files sourceSets.main.allSource
+    inputs.files sourceSets.test.allSource
 
     sources {
         include 'product-documentation.adoc'

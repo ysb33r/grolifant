@@ -21,7 +21,7 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class ChecksumFailedException extends RuntimeException {
 
-    /** Instantiates an exception
+    /** Instantiates an exception.
      *
      * @param distributionName A descriptive name of the distribution
      * @param sourceUrl The URL/URI where it was downloaded from

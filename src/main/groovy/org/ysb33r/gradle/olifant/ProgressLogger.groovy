@@ -20,5 +20,10 @@ import groovy.transform.CompileStatic
  */
 @CompileStatic
 interface ProgressLogger {
+
+    /** Sends a progress message.
+     *
+     * @param message
+     */
     void log(String message)
 }

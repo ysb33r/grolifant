@@ -28,6 +28,10 @@ import org.ysb33r.gradle.olifant.OperatingSystem
 class Linux extends GenericUnix {
     static final OperatingSystem INSTANCE = new Linux()
 
+    /** Confirms that this is an OS representation of a Linux operating system.
+     *
+     * @return {@code true}
+     */
     @Override
     boolean isLinux() { true }
 

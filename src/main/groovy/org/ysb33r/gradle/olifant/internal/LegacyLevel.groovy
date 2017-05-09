@@ -16,7 +16,7 @@ package org.ysb33r.gradle.olifant.internal
 import groovy.transform.CompileStatic
 import org.gradle.util.GradleVersion
 
-/**
+/** Internal used enumeration to help with logic with specific Gradle version differences.
  *
  */
 @CompileStatic

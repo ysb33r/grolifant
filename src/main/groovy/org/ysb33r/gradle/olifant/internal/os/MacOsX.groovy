@@ -28,6 +28,10 @@ import org.ysb33r.gradle.olifant.OperatingSystem
 class MacOsX extends GenericBSD {
     static final OperatingSystem INSTANCE = new MacOsX()
 
+    /** Confirms that this is an OS representation of a Mac operating system.
+     *
+     * @return {@code true}
+     */
     @Override
     boolean isMacOsX() { true }
 

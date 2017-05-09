@@ -36,6 +36,9 @@ import java.util.regex.Pattern
 @CompileStatic
 abstract class OperatingSystem {
 
+    /** Enumeration representing common hardware-operating system architectures.
+     *
+     */
     enum Arch {
 
         X86_64( 'amd64' ),
@@ -244,6 +247,10 @@ abstract class OperatingSystem {
 
     protected OperatingSystem() {}
 
+    /** Returns a representation of the operting system that the JVM currently runs on.
+     *
+     * @return An object implementing an extension of {@link #OperatinngSystem}.
+     */
     // tag::check_os[]
     static OperatingSystem current() {
         if (OS_NAME.contains("windows")) {

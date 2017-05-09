@@ -29,9 +29,18 @@ import org.ysb33r.gradle.olifant.OperatingSystem
 class GenericUnix extends OperatingSystem {
     static final OperatingSystem INSTANCE = new GenericUnix()
 
+    /** Confirms that this is a Unix-like operating system.
+     *
+     * @return {@code true}
+     */
     @Override
     boolean isUnix() { true }
 
+    /** Given a base string, returns the Unix executable name.
+     *
+     * @param executablePath A base path name
+     * @return Returns the provided base path name
+     */
     @Override
     String getExecutableName(final String executablePath) {
         executablePath
@@ -81,6 +90,10 @@ class GenericUnix extends OperatingSystem {
         }
     }
 
+    /** Implementation-specific free-form architecture string.
+     *
+     * @return Effectively reports the same as {@code System.getProperty("os.arch")}
+     */
     @Override
     String getArchStr() {
         OS_ARCH

@@ -28,9 +28,19 @@ import org.ysb33r.gradle.olifant.OperatingSystem
 class Solaris extends GenericUnix {
     static final OperatingSystem INSTANCE = new Solaris()
 
+    /** Confirms this is a representation of the Solaris operating system.
+     *
+     * @return {@code true}
+     */
     @Override
     boolean isSolaris() { true }
 
+    /** Solaris-specific architecture strings.
+     *
+     * Takes care of dealing with slight inconsistencies for the same type of hardware platform.
+     *
+     * @return A Solaris-dependent presentation of the underlying OS.
+     */
     @Override
     String getArchStr() {
         (OS_ARCH == 'i386' || OS_ARCH == 'x86') ? 'x86' : super.getArch()

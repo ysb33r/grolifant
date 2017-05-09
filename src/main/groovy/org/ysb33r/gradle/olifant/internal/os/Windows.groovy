@@ -28,6 +28,10 @@ import org.ysb33r.gradle.olifant.OperatingSystem
 class Windows extends OperatingSystem {
     static final OperatingSystem INSTANCE = new Windows()
 
+    /** Confirms this is a representation of the Microsoft Windows operating system.
+     *
+     * @return {@code true}
+     */
     @Override
     boolean isWindows() {true}
 

@@ -28,6 +28,10 @@ import org.ysb33r.gradle.olifant.OperatingSystem
 class NetBSD extends GenericBSD {
     static final OperatingSystem INSTANCE = new NetBSD()
 
+    /** Confirms that this is an OS representation NetBSD.
+     *
+     * @return {@code true}
+     */
     @Override
     boolean isNetBSD() { true }
 

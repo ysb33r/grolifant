@@ -1,0 +1,33 @@
+== Operating System
+
+Many plugin developers are familiar with the `OperatingSystem` internal API in Gradle. Unfortunately this remains an internal API and is subject to change.
+
+Grolifant offers a similar public API with a small number of API differences:
+
+* No `getFamilyName` and `getNativePrefix` methods. (A scan of the Gradle `3.2.1` codebase seem to yield to usage either).
+* No public static fields called `WINDOWS`, `MACOSX` etc. These are now a static field called `INSTANCE` on each of the specific operating system implementations.
+* `getSharedLibrarySuffix` and `getSharedLibraryName` have been added.
+* Support for NetBSD.
+
+=== Example
+
+[source,groovy]
+----
+include::{compatdir}/OperatingSystemSpec.groovy[tags=init_os,indent=0]
+----
+<1> Use `current()` to the operating system the code is being executed upon.
+
+=== Operating system detection
+
+The logic in {revnumber} to determine an operating system is
+
+[source,groovy]
+----
+include::{sourcedir}/OperatingSystem.groovy[tags=check_os,indent=0]
+----
+
+=== Contributing fixes
+
+Found a bug or need a method? Please raise an issue and preferably provide a pull request with features implemented for all supported operating systems.
+
+

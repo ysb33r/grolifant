@@ -11,19 +11,18 @@
  *
  * ============================================================================
  */
-package org.ysb33r.gradle.olifant
+/*
+    This code is based upon code from the Gradle org.gradle.internal.os.OperatingSystem class
+    which is nder the Apache v2.0 license. Original copyright from 2010 remains. Modifications
+    from 2017+ are under the copyright and licensed mentioned above
+*/
+package org.ysb33r.gradle.olifant.internal.os
 
-import groovy.transform.CompileStatic
-
-/** A simple interface for logging progress to stdout.
+/** Abstract base class for BSD-based operating systems.
  *
  */
-@CompileStatic
-interface ProgressLogger {
-
-    /** Sends a progress message.
-     *
-     * @param message
-     */
-    void log(String message)
+abstract class GenericBSD extends GenericUnix {
+    protected GenericBSD() {
+        super()
+    }
 }

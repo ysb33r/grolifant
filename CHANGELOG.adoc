@@ -1,9 +1,22 @@
 = CHANGELOG
 
-== Roadmap - v0.1
+== Roadmap - 0.3
 
 // tag::changelog[]
+=== Features
+* https://github.com/ysb33r/grolifant/issues/5[#5] - Operating system methods and properties
+// end::changelog[]
+
+== 0.2
+
+
+=== Other
+* https://github.com/ysb33r/grolifant/issues/1[#1] - `CompatibilityInstallerSpec` is failing under Windows.
+* https://github.com/ysb33r/grolifant/issues/2[#2] - `gradleTest` is failing under Travis CI after a number of tests.
+* https://github.com/ysb33r/grolifant/issues/3[#3] - `gradleTest` runs out of Permgen space on Appveyor.
+
+== 0.1
+
 * Distribution Installer base class.
 * `StringUtils.stringize` - convert object or closure to a string.
 * `UriUtils.urize` - convert object or closure to a URI.
-// end::changelog[]

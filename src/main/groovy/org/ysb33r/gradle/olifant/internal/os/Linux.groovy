@@ -11,19 +11,32 @@
  *
  * ============================================================================
  */
-package org.ysb33r.gradle.olifant
+/*
+    This code is based upon code from the Gradle org.gradle.internal.os.OperatingSystem class
+    which is nder the Apache v2.0 license. Original copyright from 2010 remains. Modifications
+    from 2017+ are under the copyright and licensed mentioned above
+*/
+package org.ysb33r.gradle.olifant.internal.os
 
 import groovy.transform.CompileStatic
+import org.ysb33r.gradle.olifant.OperatingSystem
 
-/** A simple interface for logging progress to stdout.
+/** Linux implementation of {@code OperatingSystem}.
  *
  */
 @CompileStatic
-interface ProgressLogger {
+class Linux extends GenericUnix {
+    static final OperatingSystem INSTANCE = new Linux()
 
-    /** Sends a progress message.
+    /** Confirms that this is an OS representation of a Linux operating system.
      *
-     * @param message
+     * @return {@code true}
      */
-    void log(String message)
+    @Override
+    boolean isLinux() { true }
+
+    private Linux() {
+        super()
+    }
+
 }

@@ -73,7 +73,7 @@ class DistributionInstallerSpec extends Specification {
         downloaded.absolutePath.endsWith("testdist-${TestInstallerForVariousFormats.DISTVER}")
 
         where:
-        ext << [ 'tar','tar.gz','tgz','tar.bz2', 'tbz']
+        ext << [ 'tar','tar.gz','tgz','tar.bz2', 'tbz','tar.xz']
     }
 
     def 'Checksums should be checked if supplied'() {

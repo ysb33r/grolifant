@@ -1,6 +1,7 @@
 plugins {
     id 'groovy'
     id 'maven'
+    id 'java-library'
     id 'org.ysb33r.bintray' version '1.5'
     id 'org.ysb33r.gradletest' version '1.0-beta5'
     id 'com.github.hierynomus.license' version '0.13.1'
@@ -10,7 +11,7 @@ plugins {
 import org.asciidoctor.gradle.AsciidoctorTask
 
 group 'org.ysb33r.gradle'
-version '0.2-SNAPSHOT'
+version '0.2'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
@@ -30,9 +31,11 @@ repositories {
 }
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    testCompile (depSpock) {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'org.tukaani:xz:1.6'
+
+    testImplementation (depSpock) {
         exclude module : 'groovy-all'
     }
 }

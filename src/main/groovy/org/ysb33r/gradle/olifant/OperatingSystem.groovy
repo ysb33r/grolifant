@@ -50,6 +50,7 @@ abstract class OperatingSystem {
 
         private final String id
     }
+
     /** Check is this is Microsoft Windows
      *
      * @return {@code true} if Windows

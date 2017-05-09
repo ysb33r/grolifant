@@ -93,6 +93,12 @@ class Windows extends OperatingSystem {
         '.lib'
     }
 
+
+    /** Architecture underlying the operating system
+     *
+     * @return Architecture type. Returns {@code OperatingSystem.Arch.UNKNOWN} is it cannot be identified. In that a
+     *   caller might need to use {@link #getArchStr()} to help with identification.
+     */
     @Override
     Arch getArch() {
         switch(getArchStr()) {

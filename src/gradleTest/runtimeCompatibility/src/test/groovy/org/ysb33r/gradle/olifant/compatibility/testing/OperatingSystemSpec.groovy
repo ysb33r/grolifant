@@ -39,7 +39,7 @@ class OperatingSystemSpec extends Specification {
         if(os.windows) {
             assert os.path.contains(new File('c:/windows'))
         } else {
-            assert os.path.contains(new File('/bin'))
+            assert os.path.contains(new File('/bin')) || os.path.contains(new File('/usr/local/bin'))
         }
 
         when:
@@ -48,7 +48,7 @@ class OperatingSystemSpec extends Specification {
         // end::init_os[]
 
         if(os.windows) {
-            findExec = os.findInPath('cmd.exe')
+            findExe = os.findInPath('cmd.exe')
         }
 
         then:

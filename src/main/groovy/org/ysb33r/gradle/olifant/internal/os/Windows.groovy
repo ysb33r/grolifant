@@ -66,7 +66,7 @@ class Windows extends OperatingSystem {
         withSuffix(libraryName, staticLibrarySuffix)
     }
 
-/** Returns Windows system seach path environmental variable name.
+    /** Returns Windows system seach path environmental variable name.
      *
      * @return {@code Path}.
      */
@@ -93,13 +93,25 @@ class Windows extends OperatingSystem {
         '.lib'
     }
 
+    @Override
+    Arch getArch() {
+        switch(getArchStr()) {
+            case 'amd64':
+                return Arch.X86_64
+            case 'i386':
+                return Arch.X86
+            default:
+                return Arch.UNKNOWN
+        }
+    }
+
 
     /** Architecture underlying the operating system
      *
      * @return {@code amd64} or {@code i386}
      */
     @Override
-    String getArch() {
+    String getArchStr() {
         if(OS_ARCH == 'x86_64') {
             return 'amd64'
         }

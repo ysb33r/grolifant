@@ -36,6 +36,20 @@ import java.util.regex.Pattern
 @CompileStatic
 abstract class OperatingSystem {
 
+    enum Arch {
+
+        X86_64( 'amd64' ),
+        X86 ( 'i386' ),
+        POWERPC( 'ppc'),
+        SPARC( 'sparc'),
+        UNKNOWN( '(unknown)' )
+
+        private Arch( final String id ) {
+            this.id = id
+        }
+
+        private final String id
+    }
     /** Check is this is Microsoft Windows
      *
      * @return {@code true} if Windows
@@ -182,9 +196,16 @@ abstract class OperatingSystem {
 
     /** Architecture underlying the operating system
      *
+     * @return Architecture type. Returns {@code OperatingSystem.Arch.UNKNOWN} is it cannot be identified. In that a
+     *   caller might need to use {@link #getArchStr()} to help with identification.
+     */
+    abstract OperatingSystem.Arch getArch()
+
+    /** Architecture underlying the operating system
+     *
      * @return Architecture string
      */
-    abstract String getArch()
+    abstract String getArchStr()
 
     /** OS-dependent string that is used to suffix to shared libraries
      *

@@ -58,20 +58,27 @@ class GenericUnix extends OperatingSystem {
     }
 
     @Override
-    String getArch() {
-        if(OS_ARCH == 'x86_64') {
-            return 'amd64'
+    Arch getArch() {
+        switch(getArchStr()) {
+            case 'amd64':
+            case 'x86_64':
+                return Arch.X86_64
+            case 'i386':
+            case 'x86':
+                return Arch.X86
+            case 'ppc':
+            case 'powerpc':
+                return Arch.POWERPC
+            case 'sparc':
+                return Arch.SPARC
+            default:
+                return Arch.UNKNOWN
         }
+    }
 
-        if (OS_ARCH == 'x86') {
-            return 'i386'
-        }
-
-        if (OS_ARCH == 'powerpc') {
-            return 'ppc'
-        }
-
-        'unknown'
+    @Override
+    String getArchStr() {
+        OS_ARCH
     }
 
     /** Return Unix-like string that is used to suffix to shared libraries

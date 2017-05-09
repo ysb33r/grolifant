@@ -32,7 +32,7 @@ class Solaris extends GenericUnix {
     boolean isSolaris() { true }
 
     @Override
-    String getArch() {
+    String getArchStr() {
         (OS_ARCH == 'i386' || OS_ARCH == 'x86') ? 'x86' : super.getArch()
     }
 

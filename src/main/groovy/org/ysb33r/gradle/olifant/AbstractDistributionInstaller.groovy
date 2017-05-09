@@ -362,7 +362,7 @@ abstract class AbstractDistributionInstaller {
             unpackedXZTar.withOutputStream { OutputStream xz ->
                 srcArchive.withInputStream { tarXZ ->
                     new XZInputStream(tarXZ).withStream { strm ->
-                        strm >> xz
+                        xz << strm
                     }
                 }
             }

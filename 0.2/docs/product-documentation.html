@@ -5,7 +5,8 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.3">
-<title>Grolifant</title>
+<meta name="author" content="Schalk W. Cronjé">
+<title>Grolifant : A Library to Support Gradle Plugin Development</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -417,71 +418,530 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .show-for-print{display:inherit!important}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+<style>
+/* Stylesheet for CodeRay to match GitHub theme | MIT License | http://foundation.zurb.com */
+/*pre.CodeRay {background-color:#f7f7f8;}*/
+.CodeRay .line-numbers{border-right:1px solid #d8d8d8;padding:0 0.5em 0 .25em}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.5em;color:rgba(0,0,0,.3)}
+.CodeRay .line-numbers strong{color:rgba(0,0,0,.4)}
+table.CodeRay{border-collapse:separate;border-spacing:0;margin-bottom:0;border:0;background:none}
+table.CodeRay td{vertical-align: top;line-height:1.45}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.line-numbers>pre{padding:0;color:rgba(0,0,0,.3)}
+table.CodeRay td.code{padding:0 0 0 .5em}
+table.CodeRay td.code>pre{padding:0}
+.CodeRay .debug{color:#fff !important;background:#000080 !important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:#000080}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:#008080}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:#008080}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:#008080}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword {color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:#008080}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}
+</style>
 </head>
-<body class="article">
+<body class="book toc2 toc-right">
 <div id="header">
-<h1>Grolifant</h1>
+<h1>Grolifant : A Library to Support Gradle Plugin Development</h1>
 <div class="details">
+<span id="author" class="author">Schalk W. Cronjé</span><br>
 <span id="revnumber">version 0.2</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_bootstrapping">Bootstrapping</a></li>
+<li><a href="#_distribution_installer">Distribution Installer</a>
+<ul class="sectlevel2">
+<li><a href="#_getting_started">Getting started</a></li>
+<li><a href="#_how_it_works">How it works</a></li>
+<li><a href="#_marking_files_executable">Marking files executable</a></li>
+<li><a href="#_search_in_custom_locations">Search in custom locations</a></li>
+<li><a href="#_changing_the_download_and_unpack_root_location">Changing the download and unpack root location</a></li>
+<li><a href="#_utilising_sdkman">Utilising SDKMAN!</a></li>
+<li><a href="#_checksum">Checksum</a></li>
+<li><a href="#_advanced_override_unpacking">Advanced: Override unpacking</a></li>
+<li><a href="#_advanced_override_verification">Advanced: Override verification</a></li>
+<li><a href="#_helper_and_other_protected_api_methods">Helper and other protected API methods</a></li>
+</ul>
+</li>
+<li><a href="#_operating_system">Operating System</a>
+<ul class="sectlevel2">
+<li><a href="#_example">Example</a></li>
+<li><a href="#_operating_system_detection">Operating system detection</a></li>
+<li><a href="#_contributing_fixes">Contributing fixes</a></li>
+</ul>
+</li>
+<li><a href="#_string_utilities">String Utilities</a>
+<ul class="sectlevel2">
+<li><a href="#_converting_objects_to_strings">Converting objects to strings</a></li>
+</ul>
+</li>
+<li><a href="#_uri_utilities">URI Utilities</a>
+<ul class="sectlevel2">
+<li><a href="#_converting_objects_to_uris">Converting objects to URIs</a></li>
+</ul>
+</li>
+<li><a href="#_what_s_in_a_name">What&#8217;s in a name</a></li>
+</ul>
 </div>
 </div>
 <div id="content">
-<div id="preamble">
+<div class="sect1">
+<h2 id="_bootstrapping">Bootstrapping</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A library to Support Gradle Plugin Development.</p>
-</div>
-<div class="paragraph">
-<p>If has been tested using <a href="https://github.com/ysb33r/gradleTest">GradleTest</a> for a wide range of compatibility. The test matrix for this release was</p>
+<p>The library is available on JCenter. Add the following to your Gradle build script to use it.</p>
 </div>
 <div class="listingblock">
-<div class="title">GradleTest version configuration</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">versions '2.0','2.1','2.2','2.3','2.4'
-versions '2.5', '2.6', '2.7'
-versions '2.8', '2.9', '2.10', '2.11'
-versions '2.12', '2.13', '2.14.1'
-versions '3.0', '3.1', '3.2.1', '3.3', '3.4', '3.5'</code></pre>
+<pre class="CodeRay highlight"><code data-lang="groovy">repositories {
+  jcenter()
+}</code></pre>
 </div>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 1. Product version documentation</caption>
-<colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><div><div class="paragraph">
-<p><strong>0.1</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="0.1/docs/product-documentation.html">Docs</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="0.1/api/index.html">Groovydoc</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="0.1/docs/changelog.html">Changelog</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><div><div class="paragraph">
-<p><strong>0.2</strong></p>
-</div></div></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="0.2/docs/product-documentation.html">Docs</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="0.2/api/index.html">Groovydoc</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="0.2/docs/changelog.html">Changelog</a></p></td>
-</tr>
-</tbody>
-</table>
+<div class="listingblock">
+<div class="title">Adding Grolifant as a compile dependency</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
+  compile 'org.ysb33r.gradle:grolifant:0.2'
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_other_links">Other links</h2>
+<h2 id="_distribution_installer">Distribution Installer</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>There are quite a number of occasions where it would be useful to download various versions SDK or distributions from a variety of sources and then install them locally without having to affect the environment of a user. The Gradle Wrapper is already a good example of this. Obviously it would be good if one could also utilise otehr solutions that manage distributions and SDKs on a per-user basis such as the excellent <a href="http://sdkman.io">SDKMAN!</a>.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html">AbstractDistributionInstaller</a> abstract class provides the base for plugin developers to add such functionality to their plugins without too much trouble.</p>
+</div>
+<div class="sect2">
+<h3 id="_getting_started">Getting started</h3>
+<div id="GettingStarted" class="paragraph">
+<p>Extend <a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html">AbstractDistributionInstaller</a></p>
+</div>
+<div class="listingblock">
+<div class="title">TestInstaller.groovy</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="type">class</span> <span class="class">TestInstaller</span> <span class="directive">extends</span> AbstractDistributionInstaller {
+        <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> DISTPATH = <span class="string"><span class="delimiter">'</span><span class="content">foo/bar</span><span class="delimiter">'</span></span>
+        <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">String</span> DISTVER  = <span class="string"><span class="delimiter">'</span><span class="content">0.1</span><span class="delimiter">'</span></span>
+
+        TestInstaller(Project project) {
+            <span class="local-variable">super</span>(<span class="string"><span class="delimiter">'</span><span class="content">Test Distribution</span><span class="delimiter">'</span></span>,DISTVER,DISTPATH,project) <i class="conum" data-value="1"></i><b>(1)</b>
+        }
+
+        <span class="annotation">@Override</span>
+        <span class="predefined-type">URI</span> uriFromVersion(<span class="predefined-type">String</span> version) { <i class="conum" data-value="2"></i><b>(2)</b>
+            TESTDIST_DIR.toURI().resolve(<span class="string"><span class="delimiter">&quot;</span><span class="content">testdist-</span><span class="inline"><span class="inline-delimiter">${</span>DISTVER<span class="inline-delimiter">}</span></span><span class="content">.zip</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+        }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The installer needs to be provided with a human-readable name, the version of the distribution, a relative path below the installation for installing this type of distribution and a reference to an exiting Gradle <code>Project</code> instance.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>uriFromVersion</code> method is used to returned an appropriate URI where to download the specific version of distribution from. Supported protocols are all those supported by Gradle Wrapper and includes <code>file</code>, <code>http(s)</code> and <code>ftp</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Use code appropriate to your specific distribution to calculate the URI.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The download is invoked by calling the <a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#getDistributionRoot()">getDistributionRoot</a> method.</p>
+</div>
+<div class="paragraph">
+<p>The above example uses Groovy to implement an installer class, but you can use Java, Kotlin or any other JVM-language that works for writing Gradle plugins.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_how_it_works">How it works</h3>
+<div class="paragraph">
+<p>When <a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#getDistributionRoot()">getDistributionRoot</a> is called, it effectively uses the following logic</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="predefined-type">File</span> location = locateDistributionInCustomLocation(distributionVersion) <i class="conum" data-value="1"></i><b>(1)</b>
+
+<span class="keyword">if</span>(location == <span class="predefined-constant">null</span> &amp;&amp; <span class="local-variable">this</span>.sdkManCandidateName)  { <i class="conum" data-value="2"></i><b>(2)</b>
+    location = getDistFromSdkMan()
+}
+
+location ?: getDistFromCache() <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>If a custom location location is specified, look there first for the specific version</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If <a href="http://sdkman.io">SDKMAN!</a> has been enabled, look if it has an available distribution.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Try to get it from cache. If not in cache try to download it.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_marking_files_executable">Marking files executable</h3>
+<div class="paragraph">
+<p>Files in some distributed archives are platform-agnostic and it is necessary to mark specific files as executable after unpacking. The <a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#addExecPattern(java.lang.String)">addExecPattern</a> method can be used for this purpose.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">TestInstaller installer = <span class="keyword">new</span> TestInstaller(project)
+installer.addExecPattern <span class="string"><span class="delimiter">'</span><span class="content">**/*.sh</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Assuming the <code>TestInstaller</code> from <a href="#GettingStarted">Getting Started</a>, this example will mark all shell files in the distribution as executable once the archive has been unpacked.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Patterns are ANT-style patterns as is common in a number of Gradle APIs.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_search_in_custom_locations">Search in custom locations</h3>
+<div class="paragraph">
+<p>The <a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#locateDistributionInCustomLocation(java.lang.String)">locateDistributionInCustomLocation</a> method can be used for setting up a search in specific locations.</p>
+</div>
+<div class="paragraph">
+<p>For example a person implementing a Ceylon language plugin might want to look in the <code>~/.ceylon</code> folder for an existing installation of a specific version.</p>
+</div>
+<div class="paragraph">
+<p>This optional implementation is completely left up to the plugin author as it will be very specific to a distribution. The method should return <code>null</code> if nothing was found.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_changing_the_download_and_unpack_root_location">Changing the download and unpack root location</h3>
+<div class="paragraph">
+<p>By default downloaded distributons will be placed in a subfolder below the Gradle user home directory as specified during construction time. It is possible, especially for testing purposes, to use a root folder other than Gradle user home by setting the <a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#setDownloadRoot(java.io.File)">downloadRoot</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_utilising_sdkman">Utilising SDKMAN!</h3>
+<div class="paragraph">
+<p><a href="http://sdkman.io">SDKMAN!</a> is a very useful local SDK installation and management tool and when specific SDKs or distributions are already supported it makes sense to re-use them in order to save on download time.</p>
+</div>
+<div class="paragraph">
+<p>All that is required is to provide the <a href="http://sdkman.io">SDKMAN!</a> candidate name using the <a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#setSdkManCandidateName(java.lang.String)">setSdkManCandidateName</a> method.</p>
+</div>
+<div class="listingblock">
+<div class="title">Utilising SDKMAN!</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">installer.sdkManCandidateName = <span class="string"><span class="delimiter">'</span><span class="content">ceylon</span><span class="delimiter">'</span></span> <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Sets the candidate name for a distribution as it will be known to <a href="http://sdkman.io">SDKMAN!</a>. In this example the Ceylon language distribution is used.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_checksum">Checksum</h3>
+<div id="Checksum" class="paragraph">
+<p>By default the installer will not check any values, but calling <a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#setChecksum(java.lang.String)">setChecksum</a> will force the installer to perform a check after downloading and before unpacking. It is possible to invoke a behavioural change by <a href="#Verification">overriding verification</a>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">TestInstaller installer = <span class="keyword">new</span> TestInstaller(project)
+installer.checksum = <span class="string"><span class="delimiter">'</span><span class="content">b1741e3d2a3f7047d041c79d018cf55286d1168fd6f0533e7fae897478abcdef</span><span class="delimiter">'</span></span>  <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Provide SHA-256 checksum string</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Only SHA-256 checksums are supported. if you need something else you will need to <a href="#Verification">override verification</a> and provide your own checksum test.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_advanced_override_unpacking">Advanced: Override unpacking</h3>
+<div class="paragraph">
+<p>By default, <code>AbstractDistributionInstaller</code> already knows how to unpack ZIPs and TARs of a varierty of compressions. If something else is required, then the <a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#unpack(java.io.File, java.io.File)">unpack</a> method can be overridden.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_advanced_override_verification">Advanced: Override verification</h3>
+<div id="Verification" class="paragraph">
+<p>Verification of a downloaded distribution occurs in two parts:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://github.com/ysb33r/grolifant">Fork me on Github</a></p>
+<p>If a <a href="#Checksum">checksum</a> is supplied, the downloaded archive is validated against the checksum. The standard implementation will only check SHA-256 checksums.</p>
+</li>
+<li>
+<p>The unpacked distribution is then checked for sanity. In the default implementation this is simply to check that only one directory was unpacked below the distribution directory. The latter is effectively just replicating the Gradle Wrapper behaviour.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>Once again it is possible to customise this behaviour if your distribution have different needs. In this case there are two protected methods than can be overridden:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#verifyDownloadChecksum(java.lang.String, java.io.File, java.lang.String)">verifyDownloadChecksum</a> - Override this method to take care of handling checksums. The method, when called, will be passed the URI where the distribution was downlaoded from, the location of the archive on the filesystem and the expected checksum. It is possible to pass <code>null</code> for the latter which means that no checksum is available.</p>
+</li>
+<li>
+<p><a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#getAndVerifyDistributionRoot(java.io.File, java.lang.String)">getAndVerifyDistributionRoot</a> - This validates the distribution on disk. When called, it is passed the the location where the distribution was unpacked into. The method should return the effective home directory of the distribution.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+In the case of <code>getAndVerifyDistributionRoot</code> it can be very confusing sometimes as to what the <code>distDir</code> is and what should be returned. The easiest is to explain this by looking at how Gradle wrappers are stored. For instance for Gradle 3.0 the <code>distDir</code> might be something like <code>~/.gradle/wrapper/dists/gradle-3.0-bin/2z3tfybitalx2py5dr8rf2mti/</code> whereas the return directory would be <code>~/.gradle/wrapper/dists/gradle-3.0-bin/2z3tfybitalx2py5dr8rf2mti/gradle-3.0</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_helper_and_other_protected_api_methods">Helper and other protected API methods</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#getProject()">getProject</a> provides access to the associated Gradle <code>Project</code> object.</p>
+</li>
+<li>
+<p><a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#listDirs(java.io.File)">listDirs</a> provides a listing of directories directly below an unpacked distribution. It can also be used for any directory if the intent is to see which child directories are available.</p>
+</li>
+<li>
+<p><a href="../api/org/ysb33r/gradle/olifant/AbstractDistributionInstaller.html#getLogger()">getLogger</a> provides access to a simple <code>stdout</code> logger.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_operating_system">Operating System</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Many plugin developers are familiar with the <code>OperatingSystem</code> internal API in Gradle. Unfortunately this remains an internal API and is subject to change.</p>
+</div>
+<div class="paragraph">
+<p>Grolifant offers a similar public API with a small number of API differences:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>No <code>getFamilyName</code> and <code>getNativePrefix</code> methods. (A scan of the Gradle <code>3.2.1</code> codebase seem to yield to usage either).</p>
+</li>
+<li>
+<p>No public static fields called <code>WINDOWS</code>, <code>MACOSX</code> etc. These are now a static field called <code>INSTANCE</code> on each of the specific operating system implementations.</p>
+</li>
+<li>
+<p><code>getSharedLibrarySuffix</code> and <code>getSharedLibraryName</code> have been added.</p>
+</li>
+<li>
+<p>Support for NetBSD.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_example">Example</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">OperatingSystem os = OperatingSystem.current() <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="predefined-type">File</span> findExe = os.findInPath(<span class="string"><span class="delimiter">'</span><span class="content">bash</span><span class="delimiter">'</span></span>)</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use <code>current()</code> to the operating system the code is being executed upon.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_operating_system_detection">Operating system detection</h3>
+<div class="paragraph">
+<p>The logic in 0.2 to determine an operating system is</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="directive">static</span> OperatingSystem current() {
+    <span class="keyword">if</span> (OS_NAME.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">windows</span><span class="delimiter">&quot;</span></span>)) {
+        <span class="keyword">return</span> Windows.INSTANCE
+    } <span class="keyword">else</span> <span class="keyword">if</span> (OS_NAME.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">mac os x</span><span class="delimiter">&quot;</span></span>) || OS_NAME.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">darwin</span><span class="delimiter">&quot;</span></span>) || OS_NAME.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">osx</span><span class="delimiter">&quot;</span></span>)) {
+        <span class="keyword">return</span> MacOsX.INSTANCE
+    } <span class="keyword">else</span> <span class="keyword">if</span> (OS_NAME.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">linux</span><span class="delimiter">&quot;</span></span>)) {
+        <span class="keyword">return</span> Linux.INSTANCE
+    } <span class="keyword">else</span> <span class="keyword">if</span> (OS_NAME.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">freebsd</span><span class="delimiter">&quot;</span></span>)) {
+        <span class="keyword">return</span> FreeBSD.INSTANCE
+    } <span class="keyword">else</span> <span class="keyword">if</span> (OS_NAME.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">sunos</span><span class="delimiter">&quot;</span></span>) || OS_NAME.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">solaris</span><span class="delimiter">&quot;</span></span>)) {
+        <span class="keyword">return</span> Solaris.INSTANCE
+    } <span class="keyword">else</span> <span class="keyword">if</span> (OS_NAME.contains(<span class="string"><span class="delimiter">&quot;</span><span class="content">netbsd</span><span class="delimiter">&quot;</span></span>)) {
+        <span class="keyword">return</span> NetBSD.INSTANCE
+    } <span class="keyword">else</span> {
+        <span class="comment">// Not strictly true, but a good guess</span>
+        <span class="keyword">return</span> GenericUnix.INSTANCE
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_contributing_fixes">Contributing fixes</h3>
+<div class="paragraph">
+<p>Found a bug or need a method? Please raise an issue and preferably provide a pull request with features implemented for all supported operating systems.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_string_utilities">String Utilities</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_converting_objects_to_strings">Converting objects to strings</h3>
+<div class="paragraph">
+<p>Use the <a href="../api/org/ysb33r/gradle/olifant/StringUtils.html#stringize(java.lang.Object)">stringize</a> method to convert nearly anything to a string or a collection of strings. Closures are evaluated and the results are then converted to strings.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">StringUtils.stringize( <span class="string"><span class="delimiter">'</span><span class="content">foo</span><span class="delimiter">'</span></span> )           == <span class="string"><span class="delimiter">'</span><span class="content">foo</span><span class="delimiter">'</span></span>
+StringUtils.stringize( <span class="keyword">new</span> <span class="predefined-type">File</span>(<span class="string"><span class="delimiter">'</span><span class="content">foo</span><span class="delimiter">'</span></span>) ) == <span class="string"><span class="delimiter">'</span><span class="content">foo</span><span class="delimiter">'</span></span>
+StringUtils.stringize( {<span class="string"><span class="delimiter">'</span><span class="content">foo</span><span class="delimiter">'</span></span>} )         == <span class="string"><span class="delimiter">'</span><span class="content">foo</span><span class="delimiter">'</span></span>
+
+StringUtils.stringize([<span class="string"><span class="delimiter">'</span><span class="content">foo1</span><span class="delimiter">'</span></span>,<span class="keyword">new</span> <span class="predefined-type">File</span>(<span class="string"><span class="delimiter">'</span><span class="content">foo2</span><span class="delimiter">'</span></span>),{<span class="string"><span class="delimiter">'</span><span class="content">foo3</span><span class="delimiter">'</span></span>}]) == [<span class="string"><span class="delimiter">'</span><span class="content">foo1</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">'</span><span class="content">foo2</span><span class="delimiter">'</span></span>,<span class="string"><span class="delimiter">'</span><span class="content">foo3</span><span class="delimiter">'</span></span>]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_uri_utilities">URI Utilities</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_converting_objects_to_uris">Converting objects to URIs</h3>
+<div class="paragraph">
+<p>Use the <a href="../api/org/ysb33r/gradle/olifant/UriUtils.html#urize(java.lang.Object)">urize</a> method to convert nearly anything to a URI. If objects that have <code>toURI()</code> methods those methods will be called, otherwise objects that are convertible to strings, will effectively call <code>toString().toURI()</code>. Closures will be evaluated and the results are then converted to URIs.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy">UriUtils.urize( <span class="string"><span class="delimiter">'</span><span class="content">ftp://foo/bar</span><span class="delimiter">'</span></span> )        == <span class="keyword">new</span> <span class="predefined-type">URI</span>(<span class="string"><span class="delimiter">'</span><span class="content">ftp://foo/bar</span><span class="delimiter">'</span></span>)
+UriUtils.urize( <span class="keyword">new</span> <span class="predefined-type">File</span>(<span class="string"><span class="delimiter">'</span><span class="content">/foo.bar</span><span class="delimiter">'</span></span>) )   == <span class="keyword">new</span> <span class="predefined-type">File</span>(<span class="string"><span class="delimiter">'</span><span class="content">/foo.bar</span><span class="delimiter">'</span></span>).toURI()
+UriUtils.urize( {<span class="string"><span class="delimiter">'</span><span class="content">ftp://foo/bar</span><span class="delimiter">'</span></span>} )      == <span class="keyword">new</span> <span class="predefined-type">URI</span>(<span class="string"><span class="delimiter">'</span><span class="content">ftp://foo/bar</span><span class="delimiter">'</span></span>)
+UriUtils.urize( {<span class="keyword">new</span> <span class="predefined-type">File</span>(<span class="string"><span class="delimiter">'</span><span class="content">/foo.bar</span><span class="delimiter">'</span></span>)} ) == <span class="keyword">new</span> <span class="predefined-type">File</span>(<span class="string"><span class="delimiter">'</span><span class="content">/foo.bar</span><span class="delimiter">'</span></span>).toURI()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_what_s_in_a_name">What&#8217;s in a name</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Grolifant</strong> is a concatenation of <strong>Gr</strong> for Gradle and <strong>olifant</strong>, which is the Afrikaans word for elephant. The latter is of course the main part of the current Gradle logo.</p>
 </div>
 </div>
 </div>
@@ -489,7 +949,7 @@ versions '3.0', '3.1', '3.2.1', '3.3', '3.4', '3.5'</code></pre>
 <div id="footer">
 <div id="footer-text">
 Version 0.2<br>
-Last updated 2016-12-31 12:13:25 CET
+Last updated 2017-05-10 15:11:23 CEST
 </div>
 </div>
 </body>

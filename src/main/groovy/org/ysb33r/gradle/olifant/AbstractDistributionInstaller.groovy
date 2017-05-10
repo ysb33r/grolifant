@@ -27,6 +27,7 @@ import org.gradle.wrapper.ExclusiveFileAccessManager
 import org.gradle.wrapper.IDownload
 import org.gradle.wrapper.PathAssembler
 import org.gradle.wrapper.WrapperConfiguration
+import org.tukaani.xz.XZInputStream
 import org.ysb33r.gradle.olifant.internal.LegacyLevel
 
 import java.security.MessageDigest
@@ -152,7 +153,7 @@ abstract class AbstractDistributionInstaller {
         this.downloader = (IDownload)(bootstrap[1])
     }
 
-    /** Validates that the unpacked distirbution is good.
+    /** Validates that the unpacked distribution is good.
      *
      * The default implementation simply checks that only one directory should exist.
      *
@@ -219,6 +220,7 @@ abstract class AbstractDistributionInstaller {
      * <li>tar</li>
      * <li>tar.gz & tgz</li>
      * <li>tar.bz2 & tbz</li>
+     * <li>tar.xz</li>
      * </ul>
      *
      * @param srcArchive The location of the download archive
@@ -355,6 +357,16 @@ abstract class AbstractDistributionInstaller {
             return project.tarTree(project.resources.gzip(srcArchive))
         } else if(name.endsWith('.tar.bz2') || name.endsWith('.tbz')) {
             return project.tarTree(project.resources.bzip2(srcArchive))
+        } else if(name.endsWith('.tar.xz')) {
+            final File unpackedXZTar = File.createTempFile(srcArchive.name.replaceAll(~/.xz$/,''),'$$$')
+            unpackedXZTar.withOutputStream { OutputStream xz ->
+                srcArchive.withInputStream { tarXZ ->
+                    new XZInputStream(tarXZ).withStream { strm ->
+                        xz << strm
+                    }
+                }
+            }
+            return project.tarTree(unpackedXZTar)
         }
 
         throw new IllegalArgumentException("${name} is not a supported archive type")

@@ -1,6 +1,7 @@
 plugins {
     id 'groovy'
     id 'maven'
+    id 'java-library'
     id 'org.ysb33r.bintray' version '1.5'
     id 'org.ysb33r.gradletest' version '1.0-beta5'
     id 'com.github.hierynomus.license' version '0.13.1'
@@ -10,9 +11,9 @@ plugins {
 import org.asciidoctor.gradle.AsciidoctorTask
 
 group 'org.ysb33r.gradle'
-version '0.1'
+version '0.2'
 sourceCompatibility = 1.7
-
+targetCompatibility = 1.7
 
 ext {
     bintrayOwner = 'ysb33r'
@@ -30,9 +31,11 @@ repositories {
 }
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    testCompile (depSpock) {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'org.tukaani:xz:1.6'
+
+    testImplementation (depSpock) {
         exclude module : 'groovy-all'
     }
 }
@@ -77,12 +80,13 @@ test {
 }
 
 gradleTest {
+    // **IMPORTANT** When adding versions also update .travel.yml & appveyor.yml
     // tag::gradleTestVersions[]
     versions '2.0','2.1','2.2','2.3','2.4'
     versions '2.5', '2.6', '2.7'
     versions '2.8', '2.9', '2.10', '2.11'
     versions '2.12', '2.13', '2.14.1'
-    versions '3.0', '3.1', '3.2.1'
+    versions '3.0', '3.1', '3.2.1', '3.3', '3.4', '3.5'
     // end::gradleTestVersions[]
 
     systemProperties GROLIFANT_VERSION_UNDER_TEST : jar.archivePath.absolutePath
@@ -204,6 +208,8 @@ asciidoctor {
     mustRunAfter validateDocVersions
     outputDir "${buildDir}/docs/product"
     separateOutputDirs = false
+    inputs.files sourceSets.main.allSource
+    inputs.files sourceSets.test.allSource
 
     sources {
         include 'product-documentation.adoc'

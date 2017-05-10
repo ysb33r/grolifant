@@ -47,7 +47,7 @@ class CompatibilityInstallerSpec extends Specification {
 
         then: 'The distribution should be unpacked'
         downloaded.exists()
-        downloaded.absolutePath.contains(TestInstaller.DISTPATH)
+        downloaded.absolutePath.contains(distPathString(TestInstaller.DISTPATH))
         downloaded.absolutePath.endsWith("testdist-${TestInstaller.DISTVER}")
 
         new File(downloaded, 'test.bat').exists()
@@ -70,4 +70,9 @@ class CompatibilityInstallerSpec extends Specification {
             TESTDIST_DIR.toURI().resolve("testdist-${DISTVER}.zip")
         }
     }
+
+    String distPathString(final String s) {
+        AbstractDistributionInstaller.IS_WINDOWS ? s.replaceAll(~/\//,'\\\\') : s
+    }
+
 }

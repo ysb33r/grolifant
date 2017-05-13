@@ -17,7 +17,7 @@ abstract class AbstractToolCommandExecSpec extends AbstractToolExecSpec {
         if(this.command == null) {
             null
         } else {
-            StringUtils.stringize(this.executable)
+            StringUtils.stringize(this.command)
         }
     }
 
@@ -34,7 +34,7 @@ abstract class AbstractToolCommandExecSpec extends AbstractToolExecSpec {
      * @param cmd Anything that can be resolved via {@link org.ysb33r.gradle.olifant.StringUtils.stringize(Object)}
      */
     void command(Object cmd) {
-        this.executable = cmd
+        setCommand(cmd)
     }
 
     /** Replace the command-specific arguments with a new set.

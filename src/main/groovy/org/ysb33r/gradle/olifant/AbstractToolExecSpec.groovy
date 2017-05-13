@@ -1,6 +1,7 @@
 package org.ysb33r.gradle.olifant
 
 import groovy.transform.CompileStatic
+import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.process.BaseExecSpec
@@ -15,12 +16,22 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
 
     /** Determine whether the exit value should be ignored.
      *
-     * @param b Whether ignore vluaed should be ignored.
+     * @param flag Whether exit value should be ignored.
      * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
      */
     @Override
-    BaseExecSpec setIgnoreExitValue(boolean b) {
-        this.ignoreExitValue = b
+    BaseExecSpec setIgnoreExitValue(boolean flag) {
+        this.ignoreExitValue = flag
+        return this
+    }
+
+    /** Determine whether the exit value should be ignored.
+     *
+     * @param flag Whether exit value should be ignored.
+     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
+     */
+    BaseExecSpec ignoreExitValue(boolean flag) {
+        setIgnoreExitValue(flag)
         return this
     }
 
@@ -44,6 +55,16 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         return this
     }
 
+    /** Set the stream where standard input should be read from for this process when executing.
+     *
+     * @param inputStream Inout stream to use.
+     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
+     */
+    BaseExecSpec standardInput(InputStream inputStream) {
+        setStandardInput(inputStream)
+    }
+
+
     /** Where input is read from during execution.
      *
      * @return Input stream.
@@ -64,6 +85,15 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         return this
     }
 
+    /** Set the stream where standard output should be sent to for this process when executing.
+     *
+     * @param outputStream Output stream to use.
+     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
+     */
+    BaseExecSpec standardOutput(OutputStream outputStream) {
+        setStandardOutput(outputStream)
+    }
+
     /** Where standard output is sent to during execution.
      *
      * @return Output stream.
@@ -82,6 +112,15 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
     BaseExecSpec setErrorOutput(OutputStream outputStream) {
         this.errorStream = outputStream
         return this
+    }
+
+    /** Set the stream where error output should be sent to for this process when executing.
+     *
+     * @param outputStream Output stream to use.
+     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
+     */
+    BaseExecSpec errorOutput(OutputStream outputStream) {
+        setErrorOutput(outputStream)
     }
 
     /** Where error output is sent to during execution.
@@ -220,8 +259,8 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
      * @return This object as an instance of {@link org,gradle.process.ProcessForkOptions}
      */
     @Override
-    ProcessForkOptions executable(Object o) {
-        this.executable = executable
+    ProcessForkOptions executable(Object exe) {
+        setExecutable(exe)
         return this
     }
 
@@ -233,6 +272,59 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
     @Override
     List<String> getCommandLine() {
         buildCommandLine()
+    }
+
+    /** Configure this spec from an {@link org.gradle.api.Action}
+     *
+     * @param action Configurating action.
+     * @return {@code this}.
+     */
+    AbstractToolExecSpec configure( Action<? extends AbstractToolExecSpec>  action) {
+        action.execute(this)
+        return this
+    }
+
+    /** Configure this spec from a closure.
+     *
+     * @param cfg Closure to use.
+     * @return
+     */
+    AbstractToolExecSpec configure(@DelegatesTo(AbstractToolExecSpec) Closure cfg) {
+        ClosureUtils.configureItem(this,cfg)
+        return this
+    }
+
+    /** Replace the tool-specific arguments with a new set.
+     *
+     * @param args New list of tool-specific arguments
+     */
+    void setExeArgs(Iterable<?> args) {
+        exeArgs.clear()
+        exeArgs.addAll(args)
+    }
+
+    /** Add more tool-specific arguments.
+     *
+     * @param args Additional list of arguments
+     */
+    void exeArgs(Iterable<?> args) {
+        exeArgs.addAll(args)
+    }
+
+    /** Add more tool-specific arguments.
+     *
+     * @param args Additional list of arguments
+     */
+    void exeArgs(Object... args) {
+        exeArgs.addAll(args)
+    }
+
+    /** Any arguments specific to the tool in use
+     *
+     * @return Arguments to the tool. Can be empty, but never null.
+     */
+    List<String> getExeArgs() {
+        StringUtils.stringize(this.exeArgs)
     }
 
     /** Construct class and attach it to specific project.
@@ -268,39 +360,6 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         }
 
         return parts
-    }
-
-    /** Replace the tool-specific arguments with a new set.
-     *
-     * @param args New list of tool-specific arguments
-     */
-    protected void setExeArgs(Iterable<?> args) {
-        exeArgs.clear()
-        exeArgs.addAll(args)
-    }
-
-    /** Add more tool-specific arguments.
-     *
-     * @param args Additional list of arguments
-     */
-    protected void exeArgs(Iterable<?> args) {
-        exeArgs.addAll(args)
-    }
-
-    /** Add more tool-specific arguments.
-     *
-     * @param args Additional list of arguments
-     */
-    protected void exeArgs(Object... args) {
-        exeArgs.addAll(args)
-    }
-
-    /** Any arguments specific to the tool in use
-     *
-     * @return Arguments to the tool. Can be empty, but never null.
-     */
-    protected  List<String> getExeArgs() {
-        StringUtils.stringize(this.exeArgs)
     }
 
     /** Replace the instruction-specific arguments with a new set.
@@ -342,7 +401,9 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
      *
      * @return Instruction as string
      */
-    protected abstract String getToolInstruction()
+    protected String getToolInstruction() {
+        null
+    }
 
     private Project project
     private boolean ignoreExitValue = false
@@ -351,7 +412,7 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
     private OutputStream errorStream
     private Object workingDir = '.'
     private Object executable
-    private Map<String,Object> env = [:]
-    private List<Object> exeArgs = []
-    private List<Object> instructionArgs = []
+    private final Map<String,Object> env = [:]
+    private final List<Object> exeArgs = []
+    private final List<Object> instructionArgs = []
 }

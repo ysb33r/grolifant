@@ -82,6 +82,10 @@ groovydoc {
 
 }
 
+sourceSets.test.groovy {
+    srcDir 'src/gradleTest/runtimeCompatibility/src/test/groovy'
+}
+
 test {
     systemProperties COMPAT_TEST_RESOURCES_DIR : file('src/gradleTest/runtimeCompatibility/src/test/resources')
 }

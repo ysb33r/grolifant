@@ -16,7 +16,7 @@ abstract class AbstractScriptExecSpec extends AbstractToolExecSpec {
         if(this.script == null) {
             null
         } else {
-            StringUtils.stringize(this.executable)
+            StringUtils.stringize(this.script)
         }
     }
 
@@ -33,7 +33,7 @@ abstract class AbstractScriptExecSpec extends AbstractToolExecSpec {
      * @param exe Anything that can be resolved via {@link org.ysb33r.gradle.olifant.StringUtils.stringize(Object)}
      */
     void script(Object cmd) {
-        this.executable = cmd
+        setScript(cmd)
     }
 
     /** Replace the script-specific arguments with a new set.

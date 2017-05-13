@@ -1,4 +1,7 @@
 package org.ysb33r.gradle.olifant
+
+import org.gradle.api.Project
+
 /** Tool execution specification aimed at script-line tools which takes a script as one of the arguments.
  *
  * @since 0.3
@@ -64,9 +67,13 @@ abstract class AbstractScriptExecSpec extends AbstractToolExecSpec {
     List<String> getScriptArgs() {
         getInstructionsArgs()
     }
-    
-    protected AbstractScriptExecSpec() {
-        super()
+
+    /** Construct class and attach it to specific project.
+     *
+     * @param project Project this exec spec is attached.
+     */
+    protected AbstractScriptExecSpec(Project project) {
+        super(project)
     }
 
     /** A specific instruction passed to a tool.

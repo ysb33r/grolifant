@@ -2,6 +2,7 @@ package org.ysb33r.gradle.olifant
 
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
+import org.gradle.api.Project
 import org.gradle.process.BaseExecSpec
 import org.gradle.process.ProcessForkOptions
 
@@ -14,8 +15,8 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
 
     /** Determine whether the exit value should be ignored.
      *
-     * @param b
-     * @return
+     * @param b Whether ignore vluaed should be ignored.
+     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
      */
     @Override
     BaseExecSpec setIgnoreExitValue(boolean b) {
@@ -32,34 +33,61 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         this.ignoreExitValue
     }
 
+    /** Set the stream where standard input should be read from for this process when executing.
+     *
+     * @param inputStream Inout stream to use.
+     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
+     */
     @Override
     BaseExecSpec setStandardInput(InputStream inputStream) {
         this.inputStream = inputStream
         return this
     }
 
+    /** Where input is read from during execution.
+     *
+     * @return Input stream.
+     */
     @Override
     InputStream getStandardInput() {
         this.inputStream
     }
 
+    /** Set the stream where standard output should be sent to for this process when executing.
+     *
+     * @param outputStream Output stream to use.
+     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
+     */
     @Override
     BaseExecSpec setStandardOutput(OutputStream outputStream) {
         this.outputStream = outputStream
         return this
     }
 
+    /** Where standard output is sent to during execution.
+     *
+     * @return Output stream.
+     */
     @Override
     OutputStream getStandardOutput() {
         this.outputStream
     }
 
+    /** Set the stream where error output should be sent to for this process when executing.
+     *
+     * @param outputStream Output stream to use.
+     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
+     */
     @Override
     BaseExecSpec setErrorOutput(OutputStream outputStream) {
         this.errorStream = outputStream
         return this
     }
 
+    /** Where error output is sent to during execution.
+     *
+     * @return Output stream.
+     */
     @Override
     OutputStream getErrorOutput() {
         this.errorStream
@@ -95,23 +123,42 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         return this
     }
 
+    /** Returns the environment ro be used for the process.
+     *
+     * @return Key-value pairing of environmental variables.
+     */
     @Override
     Map<String, Object> getEnvironment() {
         this.env
     }
 
+    /** Set the environment variables to use for the process.
+     *
+     * @param map Environmental variables as key-value pairs.
+     */
     @Override
     void setEnvironment(Map<String, ?> map) {
         this.env.clear()
         this.env.putAll(map)
     }
 
+    /** Add additional environment variables for use with the process.
+     *
+     * @param map Environmental variables as key-value pairs.
+     * @return This object as an instance of {@link org.gradle.process.ProcessForkOptions}
+     */
     @Override
     ProcessForkOptions environment(Map<String, ?> map) {
         this.env.putAll(map)
         return this
     }
 
+    /** Add additional environment variable for use with the process.
+     *
+     * @param envVar Name of environmental variable.
+     * @param vluae Value of environmental variable.
+     * @return This object as an instance of {@link org.gradle.process.ProcessForkOptions}
+     */
     @Override
     ProcessForkOptions environment(String envVar, Object value) {
         this.env.put(envVar,value)
@@ -188,7 +235,12 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         buildCommandLine()
     }
 
-    protected AbstractToolExecSpec() {
+    /** Construct class and attach it to specific project.
+     *
+     * @param project Project this exec spec is attached.
+     */
+    protected AbstractToolExecSpec(Project project) {
+        this.project=project
     }
 
     /** Builds up the script-line.
@@ -292,6 +344,7 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
      */
     protected abstract String getToolInstruction()
 
+    private Project project
     private boolean ignoreExitValue = false
     private InputStream inputStream
     private OutputStream outputStream

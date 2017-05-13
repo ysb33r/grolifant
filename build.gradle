@@ -73,6 +73,13 @@ jar {
 
 groovydoc {
     destinationDir file("${buildDir}/docs/api")
+    includePrivate false
+    link "https://docs.gradle.org/${gradle.gradleVersion}/javadoc/", 'org.gradle.process','org.gradle.api'
+    // link url, pkg1, pkg2
+    // docTitle
+    // footer
+    // haader
+
 }
 
 test {

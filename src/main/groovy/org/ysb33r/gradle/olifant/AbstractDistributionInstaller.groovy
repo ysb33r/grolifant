@@ -52,7 +52,7 @@ abstract class AbstractDistributionInstaller {
     /** Set candidate name for SdkMan if the latter should be searched for installed versions
      *
      * @param sdkCandidateName SDK Candidate name. This is the same names that will be shown when
-     *   running {@code sdk list candidates} on the command-line.
+     *   running {@code sdk list candidates} on the script-line.
      */
     void setSdkManCandidateName(final String sdkCandidateName) {
         this.sdkManCandidateName = sdkCandidateName

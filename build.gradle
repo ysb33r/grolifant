@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctorj-diagram:1.3.1'
+    }
+}
+
+
 plugins {
     id 'groovy'
     id 'maven'
@@ -211,9 +221,14 @@ task landingPage( type : AsciidoctorTask ) {
         revnumber : "${version}",
         includetopdir : projectDir.absolutePath
 
+    doLast {
+        delete "src/docs/asciidoctor/parts/diag-*.png"
+    }
 }
 
 asciidoctor {
+    requires 'asciidoctor-diagram'
+
     group "Documentation"
     description 'Generates the main product documentation & changelog'
     mustRunAfter validateDocVersions
@@ -230,7 +245,8 @@ asciidoctor {
     attributes revnumber: version,
         includetopdir : projectDir.absolutePath,
         mavengroup : project.group,
-        mavenartifact : moduleName
+        mavenartifact : moduleName,
+        'gradle-api' : "https://docs.gradle.org/${gradle.gradleVersion}/javadoc"
 }
 
 

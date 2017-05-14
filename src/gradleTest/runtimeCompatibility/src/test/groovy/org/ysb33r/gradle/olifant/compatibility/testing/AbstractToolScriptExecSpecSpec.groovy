@@ -3,7 +3,6 @@ package org.ysb33r.gradle.olifant.compatibility.testing
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.ysb33r.gradle.olifant.AbstractScriptExecSpec
-import org.ysb33r.gradle.olifant.AbstractToolCommandExecSpec
 import org.ysb33r.gradle.olifant.ResolvedExecutable
 import spock.lang.Specification
 
@@ -13,12 +12,18 @@ import spock.lang.Specification
  */
 class AbstractToolScriptExecSpecSpec extends Specification {
 
-    static class TestSpec extends AbstractScriptExecSpec {
-        TestSpec(Project project) {super(project)}
+    static
+    // tag::example-exec-spec[]
+    class PerlScriptExecSpec extends AbstractScriptExecSpec {
+        PerlScriptExecSpec(Project project,Object exe) {
+            super(project)
+            executable = exe ?: 'perl'
+        }
     }
+    // end::example-exec-spec[]
 
     Project project = ProjectBuilder.builder().build()
-    TestSpec testExecSpec = new TestSpec(project)
+    PerlScriptExecSpec testExecSpec = new PerlScriptExecSpec(project,null)
 
     void 'Configuring a specification'() {
 
@@ -33,15 +38,18 @@ class AbstractToolScriptExecSpecSpec extends Specification {
         when:
         testExecSpec.configure {
             executable wheresIsPython
-            script 'install.py'
-            scriptArgs 'cee','dee'
+            // tag::script-examples[]
+            script 'install.py'       // <1>
+            scriptArgs = ['aye']      // <2>
+            scriptArgs 'cee',{'dee'}  // <3>
+            // end::script-examples[]
         }
 
         then:
         testExecSpec.getCommandLine() == [
                 '/path/to/python.exe',
                 'install.py',
-                'cee', 'dee'
+                'aye', 'cee', 'dee'
         ]
 
         testExecSpec.ignoreExitValue == false
@@ -51,4 +59,14 @@ class AbstractToolScriptExecSpecSpec extends Specification {
         testExecSpec.workingDir == project.file('.')
 
     }
+
+    void 'Lazy-evaluate scipt '() {
+        when:
+        testExecSpec.script = {'install'}
+
+        then:
+        testExecSpec.script == 'install'
+    }
+
+
 }

@@ -1,0 +1,118 @@
+== Tool Executions Tasks and Execution Specifications
+
+Gradle script authors are quite aware of {gradle-api}/org/gradle/api/tasks/Exec.html[Exec] and /org/gradle/api/tasks/JavaExec.html[JavaExec] tasks as well as the projects extensions link:{gradle-api}/org/gradle/api/Project.html#exec(groovy.lang.Closure)[exec] and link:{gradle-api}/org/gradle/api/Project.html#javaexec(groovy.lang.Closure)[javaexec]. Implementing tasks or extensions to support specific tools can involve a lot of work. This is where this set of abstract classes come in to simplify the work to a minimum and allowing plugin authors to think about what kind of tool functionality to wrap rather than implementing heaps of boilerplate code.
+
+Wrapping an external tool within a gradle plugin usually have three components:
+
+* Execution specification
+* Task type
+* Project extension
+
+How to implement these components are described in the following sections.
+
+=== Execution specifications
+
+Execution specifications are used for configuring the necessary details for runnign an external process. The latter will then be used by a task type of a project extension.
+
+There is currently three abstract classes in the hierachy and the all implement the {gradle-api}/org/gradle/process/BaseExecSpec.html[BaseExecSpec] interface.
+
+[ditaa]
+....
+
+                       /--------------\
+                       | BaseExecSpec |
+                       \------+-------/
+                              ^
+                              |
+                              |Implements
+                              |
+                  /-----------+----------\
+                  | AbstractToolExecSpec |
+                  \------+----------+----/
+                         ^          ^
+                         |          |
+               +---------+          +----------+
+               |                               |
+/--------------+--------------\   /------------+-----------\
+| AbstractToolCommandExecSpec |   | AbstractScriptExecSpec |
+\-----------------------------/   \------------------------/
+....
+
+
+These execution specifications allow to easily present configuration options to your plugin users such as the following:
+
+.Common declarative settings
+[source,groovy]
+----
+include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[indent=0,tags=declarative]
+----
+<1> Whether the exit value can be ignored.
+<2> Where standard output should be sent to. (It is up to a plugin author to decide on behaviour if this value is `null`).
+<3> Where standard input is read from.  (It is up to a plugin author to decide on behaviour if this value is `null`).
+<4> Where error output should be sent to. (It is up to a plugin author to decide on behaviour if this value is `null`).
+<5> The working directory during execution. This is a lazy-evaluated value and can be anything that `project.file()` will be able to process.
+
+.Setting process environment
+[source,groovy]
+----
+include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[indent=0,tags=environment]
+----
+<1> Explictly set the environment in an assignment style, removing any previous environment settings.
+<2> Add additional environment settings in the familiar, and _gradlesque_, map-style. Values of environmental variables have the ability to be lazily-evaluated by the consuming task or projext extension. (As a plugin author you should consider using `MapUtils.stringizeValues` for your conversions. The tasks described further down do the same).
+<3> Add one environment setting as a pair of environment variable and its value.
+
+If you are familiar with the options on the {gradle-api}/org/gradle/api/tasks/Exec.html[Exec] task, then the above will come as no surprise. It will also present your plugin user with a familiar set of configuration options.
+
+The executable can also be set in the normal way, but if you set the executable in an implementation-specific way in your implementation you might want to <<PreventExecutableBeingSet,prevent the user from setting executable>>. These specifications also allows you to provide arguments that is specific to the executable and not any associated command. For instance if you were to do `git -C /foo commit myfile.txt`, then `-C /foo` would be executable arguments.
+
+.Setting executables and executable arguments
+[source,groovy]
+----
+include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[indent=0,tags=executable]
+----
+<1> Set the executable. This is also a lazy-evaluated value and anything that link:{groovydoc}/StringUtils.html#stringize(java.lang.Object)[StringUtils.stringize] can deal with can be used. In addition link:{groovydoc}/ResolvedExecutable.html[ResolvedExecutable] instantiations can also be used.
+<2> Explictly set the execution arguments in an assignment style, removing any previous execution arguments.
+<3> Add additional execution arguments. All of these values are lazily evaluated.
+
+The above distinction of using execution arguments might seem to be an unnecessary extra at a first read, but in terms of a DSL they allow the use to customise certain behaviour of the excutable without losing focus on the real work the executable is supposed to do. This is similar to running an additional JVM via {gradle-api}/org/gradle/api/tasks/JavaExec.html[JavaExe]c. In this case the `jvmArgs customises the JVM, and not the arguments passed to the class to be executed.
+
+In addition to those the link:{groovydoc}/AbstractToolCommandExecSpec.html[AbstractToolCommandExecSpec] will allow you to specify a command that is associated with the executable. For instance in `git commit`, the command will be `commit`.
+
+.Setting a command and command arguments (AbstractToolCommandExecSpec)
+[source,groovy]
+----
+include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[indent=0,tags=command]
+----
+<1> Set the command. This can be lazy-evaluated.
+<2> Explictly set the command arguments in an assignment style, removing any previous command arguments.
+<3> Add additional command arguments. All of these values are lazily evaluated.
+
+In a similar fashion link:{groovydoc}/AbstractScriptExecSpec.html[AbstractScriptExecSpec] offers the ability to specify a script name and script arguments.
+
+.Setting a script and script arguments (AbstractScriptExecSpec)
+[source,groovy]
+----
+include::{compatdir}/AbstractToolScriptExecSpecSpec.groovy[indent=0,tags=script-examples]
+----
+<1> Set the script. This can be lazy-evaluated.
+<2> Explictly set the script arguments in an assignment style, removing any previous script arguments.
+<3> Add additional script arguments. All of these values are lazily evaluated.
+
+In order to implement your own execution specification you need to derive from the appropriate specification.
+
+.Wrapping Git as a tool with commands
+[source,groovy]
+----
+include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[tags=example-exec-spec,indent=0]
+----
+
+.Wrapping Perl as a tool which executes scripts
+[source,groovy]
+----
+include::{compatdir}/AbstractToolScriptExecSpecSpec.groovy[tags=example-exec-spec,indent=0]
+----
+
+
+
+[[PreventExecutableBeingSet]]
+=== Preventing executable being set

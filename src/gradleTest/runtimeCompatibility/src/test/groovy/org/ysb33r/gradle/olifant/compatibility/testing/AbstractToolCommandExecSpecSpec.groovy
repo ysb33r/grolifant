@@ -1,12 +1,10 @@
 package org.ysb33r.gradle.olifant.compatibility.testing
 
-import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.process.BaseExecSpec
 import org.gradle.process.ProcessForkOptions
 import org.gradle.testfixtures.ProjectBuilder
 import org.ysb33r.gradle.olifant.AbstractToolCommandExecSpec
-import org.ysb33r.gradle.olifant.ResolvedExecutable
+import org.ysb33r.gradle.olifant.MapUtils
 import org.ysb33r.gradle.olifant.StringUtils
 import spock.lang.Specification
 
@@ -17,31 +15,48 @@ import spock.lang.Specification
  */
 class AbstractToolCommandExecSpecSpec extends Specification {
 
-    static class TestSpec extends AbstractToolCommandExecSpec {
-        TestSpec(Project project) {super(project)}
+    static
+    // tag::example-exec-spec[]
+    class GitExecSpec extends AbstractToolCommandExecSpec {
+        GitExecSpec(Project project,Object exe) {
+            super(project)
+            executable = exe ?: 'git'
+        }
     }
+    // end::example-exec-spec[]
 
     Project project = ProjectBuilder.builder().build()
-    TestSpec testExecSpec = new TestSpec(project)
+    GitExecSpec testExecSpec = new GitExecSpec(project,null)
 
     void 'Configuring a specification'() {
         when:
         testExecSpec.configure {
-            environment = [ foo : 'bar']
-            exeArgs = [ 'first', 'second' ]
-            cmdArgs = [ 'aye', 'bee']
 
-            ignoreExitValue true
-            standardOutput System.out
-            standardInput System.in
-            errorOutput System.err
-            workingDir '.'
-            environment foo2 : 'bar2', foo3 : 'bar3'
-            environment 'foo4', 'bar4'
-            executable {'/path/to/exe'}
-            exeArgs 'third', 'fourth'
-            command 'install'
-            cmdArgs 'cee','dee'
+            // tag::declarative[]
+            ignoreExitValue true  // <1>
+            standardOutput System.out  // <2>
+            standardInput System.in    // <3>
+            errorOutput System.err     // <4>
+            workingDir '.'     // <5>
+            // end::declarative[]
+
+            // tag::environment[]
+            environment = [ foo : 'bar']               // <1>
+            environment foo2 : 'bar2', foo3 : {'bar3'} // <2>
+            environment 'foo4', 'bar4'   // <3>
+            // end::environment[]
+
+            // tag::executable[]
+            executable {'/path/to/exe'}         // <1>
+            exeArgs = [ 'first', 'second' ]     // <2>
+            exeArgs 'third', {'fourth'}  // <3>
+            // end::executable[]
+
+            // tag::command[]
+            command 'install'         // <1>
+            cmdArgs = [ 'aye', 'bee'] // <2>
+            cmdArgs 'cee', {'dee'}    // <3>
+            // end::command[]
         }
 
         then:
@@ -56,7 +71,16 @@ class AbstractToolCommandExecSpecSpec extends Specification {
         testExecSpec.standardOutput == System.out
         testExecSpec.errorOutput == System.err
         testExecSpec.workingDir == project.file('.')
+        MapUtils.stringizeValues(testExecSpec.environment) == [ foo : 'bar', foo2 : 'bar2', foo3 : 'bar3', foo4 : 'bar4']
 
+    }
+
+    void 'Lazy-evaluate command'() {
+        when:
+        testExecSpec.command = {'install'}
+
+        then:
+        testExecSpec.command == 'install'
     }
 
     void 'Copying process fork options'() {

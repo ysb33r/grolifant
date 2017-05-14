@@ -14,6 +14,8 @@ include::parts/bootstrap.adoc[]
 
 include::parts/distribution-installer.adoc[]
 
+include::parts/execspec.adoc[]
+
 include::parts/operatingsystem.adoc[]
 
 include::parts/stringutils.adoc[]

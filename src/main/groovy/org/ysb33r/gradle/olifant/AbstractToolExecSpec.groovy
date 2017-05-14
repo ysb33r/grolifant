@@ -18,6 +18,7 @@ import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.process.BaseExecSpec
+import org.gradle.process.ExecSpec
 import org.gradle.process.ProcessForkOptions
 
 /** A base class to aid plugin developers create their own {@link org.gradle.process.ExecSpec} implementations.
@@ -175,7 +176,7 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         return this
     }
 
-    /** Returns the environment ro be used for the process.
+    /** Returns the environment to be used for the process.
      *
      * @return Key-value pairing of environmental variables.
      */
@@ -208,34 +209,12 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
     /** Add additional environment variable for use with the process.
      *
      * @param envVar Name of environmental variable.
-     * @param vluae Value of environmental variable.
+     * @param value Value of environmental variable.
      * @return This object as an instance of {@link org.gradle.process.ProcessForkOptions}
      */
     @Override
     ProcessForkOptions environment(String envVar, Object value) {
         this.env.put(envVar,value)
-        return this
-    }
-
-    /** Copies options from this Spec to the given target.
-     *
-     * If the target is not an instance of {@link AbstractToolExecSpec} and
-     * the executable is of type {@link ResolvedExecutable} then it will be processed before
-     * copying.
-     *
-     * @param processForkOptions Copy to this target.
-     * @return This object as a {@link org.gradle.process.ProcessForkOptions}
-     */
-    @Override
-    ProcessForkOptions copyTo(ProcessForkOptions processForkOptions) {
-        processForkOptions.setEnvironment(this.env)
-        processForkOptions.setWorkingDir(this.workingDir)
-
-        if( !(processForkOptions instanceof AbstractToolExecSpec) && this.executable instanceof ResolvedExecutable) {
-            processForkOptions.setExecutable( ((ResolvedExecutable)(this.executable)).getExecutable() )
-        } else {
-            processForkOptions.setExecutable(this.executable)
-        }
         return this
     }
 
@@ -340,12 +319,53 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         StringUtils.stringize(this.exeArgs)
     }
 
+    /** Copies options from this Spec to the given target.
+     *
+     * If the target is not an instance of {@link AbstractToolExecSpec} and
+     * the executable is of type {@link ResolvedExecutable} then it will be processed before
+     * copying.
+     *
+     * @param processForkOptions Copy to this target.
+     * @return This object as a {@link org.gradle.process.ProcessForkOptions}
+     */
+    @Override
+    ProcessForkOptions copyTo(ProcessForkOptions processForkOptions) {
+        processForkOptions.setEnvironment(this.env)
+        processForkOptions.setWorkingDir(this.workingDir)
+
+        if( !(processForkOptions instanceof AbstractToolExecSpec) && this.executable instanceof ResolvedExecutable) {
+            processForkOptions.setExecutable( ((ResolvedExecutable)(this.executable)).getExecutable() )
+        } else {
+            processForkOptions.setExecutable(this.executable)
+        }
+        return this
+    }
+
+    /** Copies settings from this execution specification to a standard {@link org.gradle.process.ExecSpec}
+     *
+     * This method is intended to be called as late as possible by a project extension or a task which would want to delegate to
+     * {@ project.exec} project extension. It will cause arguments to be evaluated.
+     * The only items not immediately evaluated are {@code workingDir} and {@code executable}.
+     *
+     * @param execSpec Exec spec to configure.
+     */
+    void copyToExecSpec(ExecSpec execSpec ) {
+        copyTo(execSpec)
+
+        execSpec.errorOutput = getErrorOutput()
+        execSpec.standardOutput = getStandardOutput()
+        execSpec.standardInput = getStandardInput()
+        execSpec.ignoreExitValue = isIgnoreExitValue()
+
+        execSpec.setArgs(buildCommandLine().drop(1))
+    }
+
     /** Construct class and attach it to specific project.
      *
      * @param project Project this exec spec is attached.
      */
     protected AbstractToolExecSpec(Project project) {
-        this.project=project
+        this.project = project
     }
 
     /** Builds up the script-line.
@@ -420,9 +440,9 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
 
     private Project project
     private boolean ignoreExitValue = false
-    private InputStream inputStream
-    private OutputStream outputStream
-    private OutputStream errorStream
+    private InputStream inputStream = System.in
+    private OutputStream outputStream = System.out
+    private OutputStream errorStream = System.err
     private Object workingDir = '.'
     private Object executable
     private final Map<String,Object> env = [:]

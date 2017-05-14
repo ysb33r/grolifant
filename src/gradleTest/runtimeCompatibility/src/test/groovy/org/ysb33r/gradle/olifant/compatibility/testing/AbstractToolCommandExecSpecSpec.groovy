@@ -179,21 +179,8 @@ class AbstractToolCommandExecSpecSpec extends Specification {
         target.workingDir == project.file('.')
         target.environment == [ foo : 'bar']
     }
+
 }
 
-
-
-//@Override
-//ProcessForkOptions copyTo(ProcessForkOptions processForkOptions) {
-//    processForkOptions.setEnvironment(this.env)
-//    processForkOptions.setWorkingDir(this.workingDir)
-//
-//    if( !(processForkOptions instanceof AbstractToolExecSpec) && this.executable instanceof ResolvedExecutable) {
-//        processForkOptions.setExecutable( ((ResolvedExecutable)(this.executable)).getExecutable() )
-//    } else {
-//        processForkOptions.setExecutable(this.executable)
-//    }
-//    return this
-//}
 
 

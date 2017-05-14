@@ -116,3 +116,38 @@ include::{compatdir}/AbstractToolScriptExecSpecSpec.groovy[tags=example-exec-spe
 
 [[PreventExecutableBeingSet]]
 === Preventing executable being set
+
+
+=== Creating a project extension
+
+link:{groovydoc}/ExtensionUtils#addProjectExecExtension(java.lang.String,org.gradle.api.Project,ExecSpecInstantiator)[ExtensionUtils.addProjectExtension] is the key method to use.
+
+Assume for the moment that you have created a execution specification class for wrapping Git and that it looks like the following:
+
+[source,groovy]
+----
+include::{compatdir}/ExecProjectExtensionSpec.groovy[tags=example-exec-spec,indent=0]
+----
+
+To add this to
+[source,groovy]
+----
+void apply(Project project) {
+include::{compatdir}/ExecProjectExtensionSpec.groovy[tags=adding-extension,indent=2]
+}
+----
+<1> An instantiator is required to create instances of execution specifications on demand. One simple way is to create a closure an coerce it to a {groovydoc}/ExecSpecInstantiator.html[ExecSpecInstantiator]
+
+Now it will be possible to do
+
+.build.gradle
+[source,groovy]
+----
+task gitdiff {
+  doLast {
+    project.gitexec {
+      command 'diff'
+    }
+  }
+}
+----

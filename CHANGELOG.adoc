@@ -8,6 +8,9 @@
 * New `ClosureUtils` class to help dealing with common Closure use cases in Gradle plugins such as configuration.
 * New `MapUtils` class to help dealing with property maps such as lazy evaluation of values.
 
+=== Other
+
+* Support for Gradle version older than 2.8 has been dropped. It is no longer time-effective to try and cope with specifics of the older Groovy version in these releases.
 // end::changelog[]
 
 == 0.2

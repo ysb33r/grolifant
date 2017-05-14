@@ -1,0 +1,3 @@
+== Compatibility
+
+As of version 0.3, the minimum version of Gradle that is supported by Grolifant is 3.8.

@@ -3,6 +3,12 @@
 The purpose of this library is provide certain building blocks which are key to writing various
   kinds of Gradle plugins, but which are not easily obtainable from Gradle core itself.
 
+== Gradle Compatibility
+
+* 0.3+: 2.8+
+* 0.2: 2.0 - 3.4
+* 0.1: 2.0 - 3.4
+
 == Documentation
 
 Please visit the http://ysb33r.github.io/grolifant[documentation website] for this plugin

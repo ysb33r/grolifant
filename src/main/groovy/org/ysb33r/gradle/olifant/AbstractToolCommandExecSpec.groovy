@@ -13,6 +13,7 @@
  */
 package org.ysb33r.gradle.olifant
 
+import groovy.transform.CompileStatic
 import org.gradle.api.Project
 import org.gradle.process.ProcessForkOptions
 
@@ -20,6 +21,7 @@ import org.gradle.process.ProcessForkOptions
  *
  * @since 0.3
  */
+@CompileStatic
 abstract class AbstractToolCommandExecSpec extends AbstractToolExecSpec {
 
     /** The script used in this specification as a String.

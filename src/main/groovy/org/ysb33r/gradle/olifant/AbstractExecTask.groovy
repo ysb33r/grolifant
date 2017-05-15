@@ -16,6 +16,8 @@ package org.ysb33r.gradle.olifant
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
@@ -290,6 +292,7 @@ abstract class AbstractExecTask<B extends AbstractExecTask, T extends AbstractTo
      */
     protected AbstractExecTask() {
         super()
+        this.execSpec = createExecSpec(project)
         setEnvironment( System.getenv() )
     }
 
@@ -301,6 +304,21 @@ abstract class AbstractExecTask<B extends AbstractExecTask, T extends AbstractTo
         execSpec.executable(exe)
     }
 
+    /** Provides access to the execution specification that is associated with this task
+     *
+     * @return Execution specification
+     */
+    protected T getExecSpec() {
+        this.execSpec
+    }
+
+    /** Factory method for creating an execution specification
+     *
+     * @param project Project that the execution speciofication should be associated to.
+     * @return Execution Specification
+     */
+    protected abstract T createExecSpec(Project project)
+
+    private final T execSpec
     private ExecResult execResult
-    private T execSpec
 }

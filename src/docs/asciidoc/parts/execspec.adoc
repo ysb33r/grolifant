@@ -5,8 +5,8 @@ Gradle script authors are quite aware of {gradle-api}/org/gradle/api/tasks/Exec.
 Wrapping an external tool within a gradle plugin usually have three components:
 
 * Execution specification
-* Task type
 * Project extension
+* Task type
 
 How to implement these components are described in the following sections.
 
@@ -112,12 +112,6 @@ include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[tags=example-exec-sp
 include::{compatdir}/AbstractToolScriptExecSpecSpec.groovy[tags=example-exec-spec,indent=0]
 ----
 
-
-
-[[PreventExecutableBeingSet]]
-=== Preventing executable being set
-
-
 === Creating a project extension
 
 link:{groovydoc}/ExtensionUtils#addProjectExecExtension(java.lang.String,org.gradle.api.Project,ExecSpecInstantiator)[ExtensionUtils.addProjectExtension] is the key method to use.
@@ -151,3 +145,9 @@ task gitdiff {
   }
 }
 ----
+
+=== Creating a task
+
+[[PreventExecutableBeingSet]]
+=== Advanced: Preventing executable being set
+

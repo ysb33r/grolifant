@@ -66,9 +66,9 @@ class AbstractToolScriptExecSpecSpec extends Specification {
         ]
 
         testExecSpec.ignoreExitValue == false
-        testExecSpec.standardInput == null
-        testExecSpec.standardOutput == null
-        testExecSpec.errorOutput == null
+        testExecSpec.standardInput == System.in
+        testExecSpec.standardOutput == System.out
+        testExecSpec.errorOutput == System.err
         testExecSpec.workingDir == project.file('.')
 
     }

@@ -13,210 +13,22 @@
  */
 package org.ysb33r.gradle.olifant
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.process.BaseExecSpec
 import org.gradle.process.ExecSpec
 import org.gradle.process.ProcessForkOptions
+import org.ysb33r.gradle.olifant.internal.execspec.ResolveExecutableFromPath
+import org.ysb33r.gradle.olifant.internal.execspec.ResolveExecutableInSearchPath
 
 /** A base class to aid plugin developers create their own {@link org.gradle.process.ExecSpec} implementations.
  *
  * @since 0.3
  */
 @CompileStatic
-abstract class AbstractToolExecSpec implements BaseExecSpec {
-
-    /** Determine whether the exit value should be ignored.
-     *
-     * @param flag Whether exit value should be ignored.
-     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
-     */
-    @Override
-    BaseExecSpec setIgnoreExitValue(boolean flag) {
-        this.ignoreExitValue = flag
-        return this
-    }
-
-    /** Determine whether the exit value should be ignored.
-     *
-     * @param flag Whether exit value should be ignored.
-     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
-     */
-    BaseExecSpec ignoreExitValue(boolean flag) {
-        setIgnoreExitValue(flag)
-        return this
-    }
-
-    /** State of exit value monitoring.
-     *
-     * @return Whether return value shoul dbe ignored.
-     */
-    @Override
-    boolean isIgnoreExitValue() {
-        this.ignoreExitValue
-    }
-
-    /** Set the stream where standard input should be read from for this process when executing.
-     *
-     * @param inputStream Inout stream to use.
-     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
-     */
-    @Override
-    BaseExecSpec setStandardInput(InputStream inputStream) {
-        this.inputStream = inputStream
-        return this
-    }
-
-    /** Set the stream where standard input should be read from for this process when executing.
-     *
-     * @param inputStream Inout stream to use.
-     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
-     */
-    BaseExecSpec standardInput(InputStream inputStream) {
-        setStandardInput(inputStream)
-    }
-
-
-    /** Where input is read from during execution.
-     *
-     * @return Input stream.
-     */
-    @Override
-    InputStream getStandardInput() {
-        this.inputStream
-    }
-
-    /** Set the stream where standard output should be sent to for this process when executing.
-     *
-     * @param outputStream Output stream to use.
-     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
-     */
-    @Override
-    BaseExecSpec setStandardOutput(OutputStream outputStream) {
-        this.outputStream = outputStream
-        return this
-    }
-
-    /** Set the stream where standard output should be sent to for this process when executing.
-     *
-     * @param outputStream Output stream to use.
-     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
-     */
-    BaseExecSpec standardOutput(OutputStream outputStream) {
-        setStandardOutput(outputStream)
-    }
-
-    /** Where standard output is sent to during execution.
-     *
-     * @return Output stream.
-     */
-    @Override
-    OutputStream getStandardOutput() {
-        this.outputStream
-    }
-
-    /** Set the stream where error output should be sent to for this process when executing.
-     *
-     * @param outputStream Output stream to use.
-     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
-     */
-    @Override
-    BaseExecSpec setErrorOutput(OutputStream outputStream) {
-        this.errorStream = outputStream
-        return this
-    }
-
-    /** Set the stream where error output should be sent to for this process when executing.
-     *
-     * @param outputStream Output stream to use.
-     * @return This object as an instance of {@link org.gradle.process.BaseExecSpec}
-     */
-    BaseExecSpec errorOutput(OutputStream outputStream) {
-        setErrorOutput(outputStream)
-    }
-
-    /** Where error output is sent to during execution.
-     *
-     * @return Output stream.
-     */
-    @Override
-    OutputStream getErrorOutput() {
-        this.errorStream
-    }
-
-    /** Obtain the working directory for this process.
-     *
-     * This call will evaluate the lazily-set working directory for {@link #setWorkingDir}0
-     * @return A {@code java.io.File} object.
-     */
-    @Override
-    File getWorkingDir() {
-        project.file(this.workingDir)
-    }
-
-    /** Set the working directory for the execution.
-     *
-     * @param workDir Any object that is convertiable using Gradle's {@code project.file}.
-     */
-    @Override
-    void setWorkingDir(Object workDir) {
-        this.workingDir = workDir
-    }
-
-    /** Set the working directory for the execution.
-     *
-     * @param workDir Any object that is convertible using Gradle's {@code project.file}.
-     * @return This object as {@link org.gradle.process.ProcessForkOptions}
-     */
-    @Override
-    ProcessForkOptions workingDir(Object workDir) {
-        this.workingDir = workDir
-        return this
-    }
-
-    /** Returns the environment to be used for the process.
-     *
-     * @return Key-value pairing of environmental variables.
-     */
-    @Override
-    Map<String, Object> getEnvironment() {
-        this.env
-    }
-
-    /** Set the environment variables to use for the process.
-     *
-     * @param map Environmental variables as key-value pairs.
-     */
-    @Override
-    void setEnvironment(Map<String, ?> map) {
-        this.env.clear()
-        this.env.putAll(map)
-    }
-
-    /** Add additional environment variables for use with the process.
-     *
-     * @param map Environmental variables as key-value pairs.
-     * @return This object as an instance of {@link org.gradle.process.ProcessForkOptions}
-     */
-    @Override
-    ProcessForkOptions environment(Map<String, ?> map) {
-        this.env.putAll(map)
-        return this
-    }
-
-    /** Add additional environment variable for use with the process.
-     *
-     * @param envVar Name of environmental variable.
-     * @param value Value of environmental variable.
-     * @return This object as an instance of {@link org.gradle.process.ProcessForkOptions}
-     */
-    @Override
-    ProcessForkOptions environment(String envVar, Object value) {
-        this.env.put(envVar,value)
-        return this
-    }
+abstract class AbstractToolExecSpec extends AbstractExecSpec {
 
     /** The executable used in this specification as a String.
      *
@@ -227,24 +39,26 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         if(this.executable == null) {
             null
         }
-        else if(this.executable instanceof ResolvedExecutable) {
-            ((ResolvedExecutable)(this.executable)).getExecutable().toString()
-        } else {
-            StringUtils.stringize(this.executable)
+        else {
+            this.executable.getExecutable().toString()
         }
     }
 
     /** Set the executable to use.
+     *
+     * If you need to search the system path, to find the executable use the {@code search : 'exeName'} form instead.
      *
      * @param exe Anything that can be resolved via {@link StringUtils.stringize(Object)} or an implementaton of
      *   {@link ResolvedExecutable}
      */
     @Override
     void setExecutable(Object exe) {
-        this.executable = exe
+        setExecutable path : exe
     }
 
     /** Set the executable to use.
+     *
+     * If you need to search the system path, to find the executable use the {@code search : 'exeName'} form instead.
      *
      * @param exe Anything that can be resolved via {@link StringUtils.stringize(Object)} or an implementaton of
      *   {@link ResolvedExecutable}
@@ -254,6 +68,33 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
     ProcessForkOptions executable(Object exe) {
         setExecutable(exe)
         return this
+    }
+
+    /** Use a key-value approach to setting the executable.
+     *
+     * In the default implementation only {@code path} and {@code search} are supported as a declarative keys. Implementations should use
+     *   {@link #registerExecutableKeyAction} to add more keys.
+     *
+     * @param exe Key-value setting executable (with optional extra keys)
+     */
+    void setExecutable(Map<String,Object> exe) {
+        String exeKey = findValidKey(exe)
+        Map<String,Object> options = [:]
+        options.putAll(exe)
+        options.remove(exeKey)
+        this.executable = executableKeyActions[exeKey].build(options,exe[exeKey])
+    }
+
+    /** Use a key-value approach to setting the executable.
+     *
+     * In the default implementation only {@code path} and {@code search} are supported as a declarative keys. Implementations should use
+     *   {@link #registerExecutableKeyAction} to add more keys.
+     *
+     * @param exe Key-value setting executable (with optional extra keys)
+     */
+    ProcessForkOptions executable(Map<String,Object> exe) {
+        setExecutable(exe)
+        return (ProcessForkOptions)this
     }
 
     /** Returns the full script line, including the executable, it's specific arguments, tool specific instruction and
@@ -420,7 +261,7 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         instructionArgs.addAll(args)
     }
 
-    /** List of arguments sepcific to the tool instruction.
+    /** List of arguments specific to the tool instruction.
      *
      * @return List of arguments. Can be empty, but not null.
      */
@@ -438,14 +279,39 @@ abstract class AbstractToolExecSpec implements BaseExecSpec {
         null
     }
 
+    /** Add additional keys for methods to resolve executables.
+     *
+     * If the key exists, it will be replaced.
+     *
+     * @param key Key Key to be used as an option looking for executables.
+     * @param factory How to resolve an executable.
+     */
+    protected void registerExecutableKeyActions( final String key, final ResolvedExecutableFactory factory) {
+        executableKeyActions.put(key,factory)
+    }
+
+    @CompileDynamic
+    private String findValidKey(Map<String,Object> exe) {
+        Set<String> keys = executableKeyActions.keySet()
+        Set<String> exeKeys = exe.keySet()
+        List<String> found = exeKeys.findAll { String it ->
+            keys.find(it)
+        }
+        if(found.empty) {
+            throw new GradleException("No valid keys found in ${exeKeys}")
+        }
+        if(found.size() > 1) {
+            throw new GradleException("More than one key found: ${found}")
+        }
+        found[0]
+    }
+
     private Project project
-    private boolean ignoreExitValue = false
-    private InputStream inputStream = System.in
-    private OutputStream outputStream = System.out
-    private OutputStream errorStream = System.err
-    private Object workingDir = '.'
-    private Object executable
-    private final Map<String,Object> env = [:]
+    private ResolvedExecutable executable
     private final List<Object> exeArgs = []
     private final List<Object> instructionArgs = []
+    private final Map< String, ResolvedExecutableFactory > executableKeyActions = [
+            'path' : new ResolveExecutableFromPath(this.project),
+            'search' : ResolveExecutableInSearchPath.INSTANCE
+    ]
 }

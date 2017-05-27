@@ -16,7 +16,7 @@ package org.ysb33r.gradle.olifant.compatibility.testing
 import org.gradle.api.Project
 import org.gradle.process.ProcessForkOptions
 import org.gradle.testfixtures.ProjectBuilder
-import org.ysb33r.gradle.olifant.AbstractToolCommandExecSpec
+import org.ysb33r.gradle.olifant.AbstractCommandExecSpec
 import org.ysb33r.gradle.olifant.MapUtils
 import org.ysb33r.gradle.olifant.StringUtils
 import spock.lang.Specification
@@ -26,11 +26,11 @@ import spock.lang.Specification
  *
  * @since
  */
-class AbstractToolCommandExecSpecSpec extends Specification {
+class AbstractCommandExecSpecSpec extends Specification {
 
     static
     // tag::example-exec-spec[]
-    class GitExecSpec extends AbstractToolCommandExecSpec {
+    class GitExecSpec extends AbstractCommandExecSpec {
         GitExecSpec(Project project,Object exe) {
             super(project)
             executable = exe ?: 'git'

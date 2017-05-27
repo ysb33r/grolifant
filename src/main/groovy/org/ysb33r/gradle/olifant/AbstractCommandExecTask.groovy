@@ -14,26 +14,23 @@
 package org.ysb33r.gradle.olifant
 
 import groovy.transform.CompileStatic
-import org.gradle.api.Project
-import org.gradle.process.ProcessForkOptions
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 
-/** Tool execution specification aimed at script-line tools which takes a script as one of the arguments.
+/** A abstract task type for executing binaries that take a command as well as a set of command arguments.
  *
  * @since 0.3
  */
 @CompileStatic
-abstract class AbstractToolCommandExecSpec extends AbstractToolExecSpec {
+abstract class AbstractCommandExecTask<T extends AbstractCommandExecSpec> extends AbstractExecTask<AbstractCommandExecTask<T>,T> {
 
-    /** The script used in this specification as a String.
+    /** The command used in this specification as a String.
      *
-     * @return Command if set (else null).
+     * @return Command
      */
+    @Input
     String getCommand() {
-        if(this.command == null) {
-            null
-        } else {
-            StringUtils.stringize(this.command)
-        }
+        toolExecSpec.getCommand()
     }
 
     /** Set the command to use.
@@ -41,7 +38,7 @@ abstract class AbstractToolCommandExecSpec extends AbstractToolExecSpec {
      * @param cmd Anything that can be resolved via {@link StringUtils.stringize(Object)}
      */
     void setCommand(Object cmd) {
-        this.command = cmd
+        toolExecSpec.setCommand(cmd)
     }
 
     /** Set the command to use.
@@ -57,7 +54,7 @@ abstract class AbstractToolCommandExecSpec extends AbstractToolExecSpec {
      * @param args New list of command-specific arguments
      */
     void setCmdArgs(Iterable<?> args) {
-        setInstructionArgs(args)
+        toolExecSpec.setCmdArgs(args)
     }
 
     /** Add more command-specific arguments.
@@ -65,7 +62,7 @@ abstract class AbstractToolCommandExecSpec extends AbstractToolExecSpec {
      * @param args Additional list of arguments
      */
     void cmdArgs(Iterable<?> args) {
-        instructionArgs(args)
+        toolExecSpec.cmdArgs(args)
     }
 
     /** Add more command-specific arguments.
@@ -73,35 +70,20 @@ abstract class AbstractToolCommandExecSpec extends AbstractToolExecSpec {
      * @param args Additional list of arguments
      */
     void cmdArgs(Object... args) {
-        instructionArgs(args)
+        toolExecSpec.cmdArgs(args)
     }
 
-    /** Any arguments specific to the command.
+    /** Any arguments specific to the command in use
      *
-     * @return Arguments to the commands. Can be empty, but never null.
+     * @return Arguments to the command. Can be empty, but never null.
      */
+    @Optional
+    @Input
     List<String> getCmdArgs() {
-        getInstructionsArgs()
+        toolExecSpec.getCmdArgs()
     }
 
-    /** Construct class and attach it to specific project.
-     *
-     * @param project Project this exec spec is attached.
-     */
-    protected AbstractToolCommandExecSpec(Project project) {
-        super(project)
+    private T getToolExecSpec() {
+        (T)(super.execSpec)
     }
-
-    /** A specific instruction passed to a tool.
-     *
-     * * Instruction can be empty or null, which means that by default implementation {@link #getToolInstructionArgs} will be ignored.
-     *
-     * @return Instruction as string
-     */
-    @Override
-    protected String getToolInstruction() {
-        getCommand()
-    }
-
-    private Object command
 }

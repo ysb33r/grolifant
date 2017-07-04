@@ -15,23 +15,39 @@ package org.ysb33r.gradle.olifant.compatibility.testing
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.ysb33r.gradle.olifant.AbstractScriptExecSpec
-import org.ysb33r.gradle.olifant.AbstractCommandExecSpec
-import org.ysb33r.gradle.olifant.AbstractCommandExecTask
+import org.ysb33r.gradle.olifant.exec.AbstractScriptExecSpec
+import org.ysb33r.gradle.olifant.exec.AbstractCommandExecSpec
+import org.ysb33r.gradle.olifant.exec.AbstractCommandExecTask
+import org.ysb33r.gradle.olifant.exec.AbstractScriptExecTask
 import org.ysb33r.gradle.olifant.OperatingSystem
 import spock.lang.Specification
+
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.attribute.PosixFilePermission
 
 class AbstractExecTaskSpec extends Specification {
 
     static final File TESTDIST_DIR = new File(System.getProperty('COMPAT_TEST_RESOURCES_DIR') ?: 'src/gradleTest/runtimeCompatibility/src/test/resources').absoluteFile
     static final String toolExt = OperatingSystem.current().windows ? 'cmd' : 'sh'
+    static final File scriptToPass = new File(TESTDIST_DIR,'mycmd.' + toolExt)
+
+    void setupSpec() {
+        // This code is here to work around the case that execute permissions are lost when GradleTest copies files.
+        if(!OperatingSystem.current().windows) {
+            Path scriptPath = scriptToPass.toPath()
+            Set perms = Files.getPosixFilePermissions(scriptPath)
+            perms.add(PosixFilePermission.OWNER_EXECUTE)
+            Files.setPosixFilePermissions(scriptPath,perms)
+        }
+    }
 
     static
     // tag::example-tool-exec-spec[]
     class MyCmdExecSpec extends AbstractCommandExecSpec {
         MyCmdExecSpec(Project project,File defaultBinary) {
             super(project)
-            executable = defaultBinary
+            setExecutable(defaultBinary)
         }
     }
     // end::example-tool-exec-spec[]
@@ -42,7 +58,7 @@ class AbstractExecTaskSpec extends Specification {
         MyCmdExec() {
             super()
             // end::example-tool-exec-type[]
-            setToolExecutable(new File(TESTDIST_DIR,'mycmd.' + toolExt))
+            setToolExecutable(AbstractExecTaskSpec.scriptToPass)
             // tag::example-tool-exec-type[]
         }
 
@@ -57,15 +73,15 @@ class AbstractExecTaskSpec extends Specification {
     class MyScriptExecSpec extends AbstractScriptExecSpec {
         MyScriptExecSpec(Project project,File defaultBinary) {
             super(project)
-            executable = defaultBinary
+            setExecutable(defaultBinary)
         }
     }
 
     static
-    class MyScriptExec extends AbstractCommandExecTask< MyScriptExecSpec > {
+    class MyScriptExec extends AbstractScriptExecTask< MyScriptExecSpec > {
         MyScriptExec() {
             super()
-            setToolExecutable(new File(TESTDIST_DIR,'mycmd.' + toolExt))
+            setToolExecutable(scriptToPass)
         }
 
         @Override

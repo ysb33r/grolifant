@@ -14,7 +14,6 @@
 package org.ysb33r.gradle.olifant
 
 import org.gradle.api.Project
-import org.gradle.internal.impldep.org.testng.annotations.TestInstance
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 import spock.lang.Unroll

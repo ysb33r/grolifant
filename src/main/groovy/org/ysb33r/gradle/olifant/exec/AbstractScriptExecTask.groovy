@@ -11,7 +11,7 @@
  *
  * ============================================================================
  */
-package org.ysb33r.gradle.olifant
+package org.ysb33r.gradle.olifant.exec
 
 import groovy.transform.CompileStatic
 import org.gradle.api.tasks.Input
@@ -22,65 +22,65 @@ import org.gradle.api.tasks.Optional
  * @since 0.3
  */
 @CompileStatic
-abstract class AbstractCommandExecTask<T extends AbstractCommandExecSpec> extends AbstractExecTask<AbstractCommandExecTask<T>,T> {
+abstract class AbstractScriptExecTask<T extends AbstractScriptExecSpec> extends AbstractExecTask<AbstractScriptExecTask<T>,T> {
 
-    /** The command used in this specification as a String.
+    /** The script used in this specification as a String.
      *
-     * @return Command
+     * @return Script
      */
     @Input
-    String getCommand() {
-        toolExecSpec.getCommand()
+    String getScript() {
+        toolExecSpec.getScript()
     }
 
-    /** Set the command to use.
-     *
-     * @param cmd Anything that can be resolved via {@link StringUtils.stringize(Object)}
-     */
-    void setCommand(Object cmd) {
-        toolExecSpec.setCommand(cmd)
-    }
-
-    /** Set the command to use.
+    /** Set the script to use.
      *
      * @param cmd Anything that can be resolved via {@link org.ysb33r.gradle.olifant.StringUtils.stringize(Object)}
      */
-    void command(Object cmd) {
-        setCommand(cmd)
+    void setScript(Object cmd) {
+        toolExecSpec.setScript(cmd)
     }
 
-    /** Replace the command-specific arguments with a new set.
+    /** Set the script to use.
      *
-     * @param args New list of command-specific arguments
+     * @param cmd Anything that can be resolved via {@link org.ysb33r.gradle.olifant.StringUtils.stringize(Object)}
      */
-    void setCmdArgs(Iterable<?> args) {
-        toolExecSpec.setCmdArgs(args)
+    void script(Object cmd) {
+        setScript(cmd)
     }
 
-    /** Add more command-specific arguments.
+    /** Replace the script-specific arguments with a new set.
+     *
+     * @param args New list of script-specific arguments
+     */
+    void setScriptArgs(Iterable<?> args) {
+        toolExecSpec.setScriptArgs(args)
+    }
+
+    /** Add more script-specific arguments.
      *
      * @param args Additional list of arguments
      */
-    void cmdArgs(Iterable<?> args) {
-        toolExecSpec.cmdArgs(args)
+    void scriptArgs(Iterable<?> args) {
+        toolExecSpec.scriptArgs(args)
     }
 
-    /** Add more command-specific arguments.
+    /** Add more script-specific arguments.
      *
      * @param args Additional list of arguments
      */
-    void cmdArgs(Object... args) {
-        toolExecSpec.cmdArgs(args)
+    void scriptArgs(Object... args) {
+        toolExecSpec.scriptArgs(args)
     }
 
-    /** Any arguments specific to the command in use
+    /** Any arguments specific to the script in use
      *
-     * @return Arguments to the command. Can be empty, but never null.
+     * @return Arguments to the script. Can be empty, but never null.
      */
     @Optional
     @Input
-    List<String> getCmdArgs() {
-        toolExecSpec.getCmdArgs()
+    List<String> getScriptArgs() {
+        toolExecSpec.getScriptArgs()
     }
 
     private T getToolExecSpec() {

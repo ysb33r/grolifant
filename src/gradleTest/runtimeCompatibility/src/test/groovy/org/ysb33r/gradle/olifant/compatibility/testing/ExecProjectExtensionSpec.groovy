@@ -16,8 +16,8 @@ package org.ysb33r.gradle.olifant.compatibility.testing
 import org.gradle.api.Project
 import org.gradle.process.ExecResult
 import org.gradle.testfixtures.ProjectBuilder
-import org.ysb33r.gradle.olifant.AbstractCommandExecSpec
-import org.ysb33r.gradle.olifant.ExecSpecInstantiator
+import org.ysb33r.gradle.olifant.exec.AbstractCommandExecSpec
+import org.ysb33r.gradle.olifant.exec.ExecSpecInstantiator
 import org.ysb33r.gradle.olifant.ExtensionUtils
 import org.ysb33r.gradle.olifant.OperatingSystem
 import spock.lang.Specification
@@ -33,7 +33,7 @@ class ExecProjectExtensionSpec extends Specification {
     class GitExecSpec extends AbstractCommandExecSpec {
         GitExecSpec(Project project) {
             super(project)
-            executable = 'git'
+            setExecutable('git')
         }
     }
     // end::example-exec-spec[]

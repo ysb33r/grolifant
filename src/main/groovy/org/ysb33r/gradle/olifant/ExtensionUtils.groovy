@@ -17,6 +17,8 @@ import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.ysb33r.gradle.olifant.exec.AbstractToolExecSpec
+import org.ysb33r.gradle.olifant.exec.ExecSpecInstantiator
 import org.ysb33r.gradle.olifant.internal.execspec.ExecProjectExtension
 
 /** Utilities to deal with Gradle extensions and project extensions

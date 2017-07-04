@@ -16,11 +16,10 @@ package org.ysb33r.gradle.olifant.internal.execspec
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.internal.reflect.Instantiator
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
-import org.ysb33r.gradle.olifant.AbstractToolExecSpec
-import org.ysb33r.gradle.olifant.ExecSpecInstantiator
+import org.ysb33r.gradle.olifant.exec.AbstractToolExecSpec
+import org.ysb33r.gradle.olifant.exec.ExecSpecInstantiator
 
 /**
  *

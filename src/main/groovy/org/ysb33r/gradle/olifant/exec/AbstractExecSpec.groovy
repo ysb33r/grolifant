@@ -11,15 +11,18 @@
  *
  * ============================================================================
  */
-package org.ysb33r.gradle.olifant
+package org.ysb33r.gradle.olifant.exec
 
+import groovy.transform.CompileStatic
+import org.gradle.api.Project
 import org.gradle.process.BaseExecSpec
 import org.gradle.process.ProcessForkOptions
 
-/**
+/** Abstract base class that implements {@link org.gradle.process.BaseExecSpec}.
  *
  * @since 0.1
  */
+@CompileStatic
 abstract class AbstractExecSpec implements BaseExecSpec {
 
     /** Determine whether the exit value should be ignored.
@@ -39,6 +42,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
         this.ignoreExitValue = flag
         return this
     }
+
     /** Determine whether the exit value should be ignored.
      *
      * @param flag Whether exit value should be ignored.
@@ -48,6 +52,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
         setIgnoreExitValue(flag)
         return this
     }
+
     /** State of exit value monitoring.
      *
      * @return Whether return value shoul dbe ignored.
@@ -56,6 +61,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
     boolean isIgnoreExitValue() {
         this.ignoreExitValue
     }
+
     /** Set the stream where standard input should be read from for this process when executing.
      *
      * @param inputStream Inout stream to use.
@@ -66,6 +72,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
         this.inputStream = inputStream
         return this
     }
+
     /** Set the stream where standard input should be read from for this process when executing.
      *
      * @param inputStream Inout stream to use.
@@ -74,6 +81,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
     BaseExecSpec standardInput(InputStream inputStream) {
         setStandardInput(inputStream)
     }
+
     /** Where input is read from during execution.
      *
      * @return Input stream.
@@ -82,6 +90,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
     InputStream getStandardInput() {
         this.inputStream
     }
+
     /** Set the stream where standard output should be sent to for this process when executing.
      *
      * @param outputStream Output stream to use.
@@ -92,6 +101,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
         this.outputStream = outputStream
         return this
     }
+
     /** Set the stream where standard output should be sent to for this process when executing.
      *
      * @param outputStream Output stream to use.
@@ -100,6 +110,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
     BaseExecSpec standardOutput(OutputStream outputStream) {
         setStandardOutput(outputStream)
     }
+
     /** Where standard output is sent to during execution.
      *
      * @return Output stream.
@@ -108,6 +119,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
     OutputStream getStandardOutput() {
         this.outputStream
     }
+
     /** Set the stream where error output should be sent to for this process when executing.
      *
      * @param outputStream Output stream to use.
@@ -118,6 +130,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
         this.errorStream = outputStream
         return this
     }
+
     /** Set the stream where error output should be sent to for this process when executing.
      *
      * @param outputStream Output stream to use.
@@ -126,6 +139,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
     BaseExecSpec errorOutput(OutputStream outputStream) {
         setErrorOutput(outputStream)
     }
+
     /** Where error output is sent to during execution.
      *
      * @return Output stream.
@@ -134,6 +148,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
     OutputStream getErrorOutput() {
         this.errorStream
     }
+
     /** Obtain the working directory for this process.
      *
      * This call will evaluate the lazily-set working directory for {@link #setWorkingDir}0
@@ -143,6 +158,7 @@ abstract class AbstractExecSpec implements BaseExecSpec {
     File getWorkingDir() {
         project.file(this.workingDir)
     }
+
     /** Set the working directory for the execution.
      *
      * @param workDir Any object that is convertiable using Gradle's {@code project.file}.
@@ -151,6 +167,19 @@ abstract class AbstractExecSpec implements BaseExecSpec {
     void setWorkingDir(Object workDir) {
         this.workingDir = workDir
     }
+
+    /** Set the working directory for the execution.
+     *
+     * <p> This version has been introduced to deal with the API change in Gradle 4.0.
+     *
+     * @param workDir Working directory as a {@code java.io.File} instance.
+     *
+     * @since 0.3
+     */
+    void setWorkingDir(File workDir) {
+        this.workingDir = workDir
+    }
+
     /** Set the working directory for the execution.
      *
      * @param workDir Any object that is convertible using Gradle's {@code project.file}.
@@ -199,4 +228,10 @@ abstract class AbstractExecSpec implements BaseExecSpec {
         this.env.put(envVar,value)
         return this
     }
+
+    protected AbstractExecSpec(Project project) {
+        this.project = project
+    }
+
+    protected final Project project
 }

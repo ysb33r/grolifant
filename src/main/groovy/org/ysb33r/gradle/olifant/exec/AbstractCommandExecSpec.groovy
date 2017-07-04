@@ -11,73 +11,76 @@
  *
  * ============================================================================
  */
-package org.ysb33r.gradle.olifant
+package org.ysb33r.gradle.olifant.exec
 
+import groovy.transform.CompileStatic
 import org.gradle.api.Project
+import org.ysb33r.gradle.olifant.StringUtils
 
 /** Tool execution specification aimed at script-line tools which takes a script as one of the arguments.
  *
  * @since 0.3
  */
-abstract class AbstractScriptExecSpec extends AbstractToolExecSpec {
+@CompileStatic
+abstract class AbstractCommandExecSpec extends AbstractToolExecSpec {
 
     /** The script used in this specification as a String.
      *
      * @return Command if set (else null).
      */
-    String getScript() {
-        if(this.script == null) {
+    String getCommand() {
+        if(this.command == null) {
             null
         } else {
-            StringUtils.stringize(this.script)
+            StringUtils.stringize(this.command)
         }
     }
 
-    /** Set the executable to use.
+    /** Set the command to use.
      *
      * @param cmd Anything that can be resolved via {@link StringUtils.stringize(Object)}
      */
-    void setScript(Object cmd) {
-        this.script = cmd
+    void setCommand(Object cmd) {
+        this.command = cmd
     }
 
-    /** Set the executable to use.
+    /** Set the command to use.
      *
-     * @param exe Anything that can be resolved via {@link org.ysb33r.gradle.olifant.StringUtils.stringize(Object)}
+     * @param cmd Anything that can be resolved via {@link org.ysb33r.gradle.olifant.StringUtils.stringize(Object)}
      */
-    void script(Object cmd) {
-        setScript(cmd)
+    void command(Object cmd) {
+        setCommand(cmd)
     }
 
-    /** Replace the script-specific arguments with a new set.
+    /** Replace the command-specific arguments with a new set.
      *
-     * @param args New list of tool-specific arguments
+     * @param args New list of command-specific arguments
      */
-    void setScriptArgs(Iterable<?> args) {
+    void setCmdArgs(Iterable<?> args) {
         setInstructionArgs(args)
     }
 
-    /** Add more script-specific arguments.
+    /** Add more command-specific arguments.
      *
      * @param args Additional list of arguments
      */
-    void scriptArgs(Iterable<?> args) {
+    void cmdArgs(Iterable<?> args) {
         instructionArgs(args)
     }
 
-    /** Add more script-specific arguments.
+    /** Add more command-specific arguments.
      *
      * @param args Additional list of arguments
      */
-    void scriptArgs(Object... args) {
+    void cmdArgs(Object... args) {
         instructionArgs(args)
     }
 
-    /** Any arguments specific to the script.
+    /** Any arguments specific to the command.
      *
      * @return Arguments to the commands. Can be empty, but never null.
      */
-    List<String> getScriptArgs() {
+    List<String> getCmdArgs() {
         getInstructionsArgs()
     }
 
@@ -85,7 +88,7 @@ abstract class AbstractScriptExecSpec extends AbstractToolExecSpec {
      *
      * @param project Project this exec spec is attached.
      */
-    protected AbstractScriptExecSpec(Project project) {
+    protected AbstractCommandExecSpec(Project project) {
         super(project)
     }
 
@@ -97,8 +100,8 @@ abstract class AbstractScriptExecSpec extends AbstractToolExecSpec {
      */
     @Override
     protected String getToolInstruction() {
-        getScript()
+        getCommand()
     }
 
-    private Object script
+    private Object command
 }

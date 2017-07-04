@@ -15,8 +15,8 @@ package org.ysb33r.gradle.olifant.compatibility.testing
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.ysb33r.gradle.olifant.AbstractScriptExecSpec
-import org.ysb33r.gradle.olifant.ResolvedExecutable
+import org.ysb33r.gradle.olifant.exec.AbstractScriptExecSpec
+import org.ysb33r.gradle.olifant.exec.ResolvedExecutable
 import spock.lang.Specification
 
 /**
@@ -30,7 +30,7 @@ class AbstractToolScriptExecSpecSpec extends Specification {
     class PerlScriptExecSpec extends AbstractScriptExecSpec {
         PerlScriptExecSpec(Project project,Object exe) {
             super(project)
-            executable = exe ?: 'perl'
+            setExecutable(exe ?: 'perl')
         }
     }
     // end::example-exec-spec[]

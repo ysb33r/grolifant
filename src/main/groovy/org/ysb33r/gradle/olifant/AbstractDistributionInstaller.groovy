@@ -162,7 +162,7 @@ abstract class AbstractDistributionInstaller {
      * @return The directory where the real distribution now exists. In the default implementation it will be
      *   the single directory that exists below {@code distDir}.
      *
-     * @throw {@link DistributionFailedException} if distribution failed to meet criteria.
+     * @throw {@link org.ysb33r.gradle.olifant.DistributionFailedException} if distribution failed to meet criteria.
      */
     protected File getAndVerifyDistributionRoot(final File distDir, final String distributionDescription) {
         List<File> dirs = listDirs(distDir)
@@ -181,7 +181,7 @@ abstract class AbstractDistributionInstaller {
      * @param localCompressedFile The location of the downloaded archive
      * @param expectedSum The expected checksum. Can be null in which case no checks will be performed.
      *
-     * @throw {@link ChecksumFailedException} if the checksum did not match
+     * @throw {@link org.ysb33r.gradle.olifant.ChecksumFailedException} if the checksum did not match
      */
     protected void verifyDownloadChecksum(final String sourceUrl, final File localCompressedFile, final String expectedSum) {
         if (expectedSum != null) {

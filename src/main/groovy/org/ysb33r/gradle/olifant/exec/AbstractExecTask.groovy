@@ -11,12 +11,10 @@
  *
  * ============================================================================
  */
-package org.ysb33r.gradle.olifant
+package org.ysb33r.gradle.olifant.exec
 
 import groovy.transform.CompileStatic
-import org.gradle.api.Action
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -24,7 +22,6 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
-import org.gradle.process.ProcessForkOptions
 
 /** A base class to use for developing execution classes for wrapping tools
  *
@@ -298,7 +295,7 @@ abstract class AbstractExecTask<B extends AbstractExecTask, T extends AbstractTo
 
     /** Sets the executable to use for this task
      *
-     * @param exe Anything resolvable via {@link StringUtils.stringize(java.lang.Object}
+     * @param exe Anything resolvable via {@link org.ysb33r.gradle.olifant.StringUtils.stringize(java.lang.Object}
      */
     protected void setToolExecutable(Object exe) {
         execSpec.executable(exe)

@@ -16,8 +16,8 @@ package org.ysb33r.gradle.olifant.internal.execspec
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
 import org.ysb33r.gradle.olifant.OperatingSystem
-import org.ysb33r.gradle.olifant.ResolvedExecutable
-import org.ysb33r.gradle.olifant.ResolvedExecutableFactory
+import org.ysb33r.gradle.olifant.exec.ResolvedExecutable
+import org.ysb33r.gradle.olifant.exec.ResolvedExecutableFactory
 import org.ysb33r.gradle.olifant.StringUtils
 
 /** Resolves executable by search the system path.

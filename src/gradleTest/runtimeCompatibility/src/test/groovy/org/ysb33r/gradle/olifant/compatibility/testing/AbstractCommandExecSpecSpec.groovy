@@ -16,16 +16,11 @@ package org.ysb33r.gradle.olifant.compatibility.testing
 import org.gradle.api.Project
 import org.gradle.process.ProcessForkOptions
 import org.gradle.testfixtures.ProjectBuilder
-import org.ysb33r.gradle.olifant.AbstractCommandExecSpec
+import org.ysb33r.gradle.olifant.exec.AbstractCommandExecSpec
 import org.ysb33r.gradle.olifant.MapUtils
 import org.ysb33r.gradle.olifant.StringUtils
 import spock.lang.Specification
 
-
-/**
- *
- * @since
- */
 class AbstractCommandExecSpecSpec extends Specification {
 
     static
@@ -33,7 +28,7 @@ class AbstractCommandExecSpecSpec extends Specification {
     class GitExecSpec extends AbstractCommandExecSpec {
         GitExecSpec(Project project,Object exe) {
             super(project)
-            executable = exe ?: 'git'
+            setExecutable (exe ?: 'git')
         }
     }
     // end::example-exec-spec[]
@@ -105,6 +100,11 @@ class AbstractCommandExecSpecSpec extends Specification {
                 StringUtils.stringize(exe)
             }
 
+            // Override in 4.0
+            void setExecutable(String s) {
+                this.exe = s
+            }
+
             @Override
             void setExecutable(Object o) {
                 this.exe = o
@@ -124,6 +124,11 @@ class AbstractCommandExecSpecSpec extends Specification {
             @Override
             void setWorkingDir(Object o) {
                 this.wd = o
+            }
+
+            // Override in 4.0
+            void setWorkingDir(File f) {
+                this.wd = f
             }
 
             @Override

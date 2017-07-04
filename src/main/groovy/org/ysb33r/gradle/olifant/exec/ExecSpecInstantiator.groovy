@@ -11,7 +11,7 @@
  *
  * ============================================================================
  */
-package org.ysb33r.gradle.olifant
+package org.ysb33r.gradle.olifant.exec
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Project

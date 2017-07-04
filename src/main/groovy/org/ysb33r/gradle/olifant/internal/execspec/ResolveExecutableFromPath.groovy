@@ -14,10 +14,9 @@
 package org.ysb33r.gradle.olifant.internal.execspec
 
 import groovy.transform.CompileStatic
-import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.ysb33r.gradle.olifant.ResolvedExecutable
-import org.ysb33r.gradle.olifant.ResolvedExecutableFactory
+import org.ysb33r.gradle.olifant.exec.ResolvedExecutable
+import org.ysb33r.gradle.olifant.exec.ResolvedExecutableFactory
 
 /** Resolves an executable from a path.
  *
@@ -38,13 +37,30 @@ class ResolveExecutableFromPath implements ResolvedExecutableFactory {
      */
     ResolvedExecutable build(Map<String,Object> options,Object lazyPath) {
 
-        return new ResolvedExecutable() {
-            @Override
-            File getExecutable() {
-                project.file(lazyPath)
-            }
-        }
+        return new Resolver(lazyPath,project)
+//        return new ResolvedExecutable() {
+//
+//            @Override
+//            File getExecutable() {
+//                project.file(lazyPath)
+//            }
+//        }
     }
 
     private final Project project
+
+    private static class Resolver implements ResolvedExecutable {
+        Resolver(final Object lazyPath,final Project project) {
+            this.lazyPath = lazyPath
+            this.project = project
+        }
+
+        @Override
+        File getExecutable() {
+            project.file(this.lazyPath)
+        }
+
+        private final Object lazyPath
+        private final Project project
+    }
 }

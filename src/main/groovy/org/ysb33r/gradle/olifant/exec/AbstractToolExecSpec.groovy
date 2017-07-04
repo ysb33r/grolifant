@@ -11,15 +11,16 @@
  *
  * ============================================================================
  */
-package org.ysb33r.gradle.olifant
+package org.ysb33r.gradle.olifant.exec
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.process.ExecSpec
 import org.gradle.process.ProcessForkOptions
+import org.ysb33r.gradle.olifant.ClosureUtils
+import org.ysb33r.gradle.olifant.StringUtils
 import org.ysb33r.gradle.olifant.internal.execspec.ResolveExecutableFromPath
 import org.ysb33r.gradle.olifant.internal.execspec.ResolveExecutableInSearchPath
 
@@ -48,19 +49,37 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
      *
      * If you need to search the system path, to find the executable use the {@code search : 'exeName'} form instead.
      *
-     * @param exe Anything that can be resolved via {@link StringUtils.stringize(Object)} or an implementaton of
+     * @param exe Anything that can be resolved via {@link org.ysb33r.gradle.olifant.StringUtils.stringize(Object)} or an implementation of
      *   {@link ResolvedExecutable}
      */
     @Override
     void setExecutable(Object exe) {
-        setExecutable path : exe
+        setExecutable ([path : exe])
+    }
+
+    /** Set the executable to use.
+     *
+     * @param exe An implementation of {@link ResolvedExecutable}
+     */
+    void setExecutable(ResolvedExecutable resolver) {
+        this.executable = resolver
+    }
+
+    /** Set the executable to use.
+     *
+     * <p> This variant of the method has been introduced to cope with the API change in Gradle 4.0.
+     *
+     * @param exe Executable as String representation
+     */
+    void setExecutable(String exe) {
+        setExecutable ([path : (Object)exe])
     }
 
     /** Set the executable to use.
      *
      * If you need to search the system path, to find the executable use the {@code search : 'exeName'} form instead.
      *
-     * @param exe Anything that can be resolved via {@link StringUtils.stringize(Object)} or an implementaton of
+     * @param exe Anything that can be resolved via {@link org.ysb33r.gradle.olifant.StringUtils.stringize(Object)} or an implementation of
      *   {@link ResolvedExecutable}
      * @return This object as an instance of {@link org,gradle.process.ProcessForkOptions}
      */
@@ -69,6 +88,17 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
         setExecutable(exe)
         return this
     }
+
+    /** Set the executable to use.
+     *
+     * @param exe An implementation of {@link ResolvedExecutable}
+     * @return This object as an instance of {@link org,gradle.process.ProcessForkOptions}
+     */
+    ProcessForkOptions executable(ResolvedExecutable resolver) {
+        this.executable = resolver
+        return this
+    }
+
 
     /** Use a key-value approach to setting the executable.
      *
@@ -206,7 +236,12 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
      * @param project Project this exec spec is attached.
      */
     protected AbstractToolExecSpec(Project project) {
-        this.project = project
+        super(project)
+
+        executableKeyActions = [
+            'path' : new ResolveExecutableFromPath(this.project),
+            'search' : ResolveExecutableInSearchPath.INSTANCE
+        ] as Map< String, ResolvedExecutableFactory >
     }
 
     /** Builds up the script-line.
@@ -223,7 +258,7 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
             throw new GradleException( '''The 'executable' part cannot be null.''')
         }
 
-        parts.add getExecutable()
+        parts.add exe
         parts.addAll getExeArgs()
 
         String instruction = getToolInstruction()
@@ -271,7 +306,7 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
 
     /** A specific instruction passed to a tool.
      *
-     * * Instruction can be empty or null, which means that by default implementation {@link #getToolInstructionArgs()} will be ignored.
+     * * Instruction can be empty or null. In the default implementation {@link #getToolInstructionArgs()} will be ignored.
      *
      * @return Instruction as string
      */
@@ -290,15 +325,23 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
         executableKeyActions.put(key,factory)
     }
 
-    @CompileDynamic
+    /** Look for excactly one valid key in the supplied map.
+     *
+     * @param exe List of keys to search.
+     * @return The valid key
+     * @throw GradleException if no keys are valid, or more than one key is valid.
+     */
     private String findValidKey(Map<String,Object> exe) {
-        Set<String> keys = executableKeyActions.keySet()
-        Set<String> exeKeys = exe.keySet()
-        List<String> found = exeKeys.findAll { String it ->
-            keys.find(it)
-        }
+        Set<String> validKeys = executableKeyActions.keySet()
+        Set<String> candidateKeys = exe.keySet()
+
+        Set<String> found = candidateKeys.findAll { String candidate ->
+            validKeys.find { String validKey ->
+                candidate == validKey
+            }
+        } as Set<String>
         if(found.empty) {
-            throw new GradleException("No valid keys found in ${exeKeys}")
+            throw new GradleException("No valid keys found in ${candidateKeys}")
         }
         if(found.size() > 1) {
             throw new GradleException("More than one key found: ${found}")
@@ -306,12 +349,8 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
         found[0]
     }
 
-    private Project project
     private ResolvedExecutable executable
     private final List<Object> exeArgs = []
     private final List<Object> instructionArgs = []
-    private final Map< String, ResolvedExecutableFactory > executableKeyActions = [
-            'path' : new ResolveExecutableFromPath(this.project),
-            'search' : ResolveExecutableInSearchPath.INSTANCE
-    ]
+    private final Map< String, ResolvedExecutableFactory > executableKeyActions
 }

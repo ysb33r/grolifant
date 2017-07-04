@@ -11,23 +11,22 @@
  *
  * ============================================================================
  */
-package org.ysb33r.gradle.olifant
+package org.ysb33r.gradle.olifant.exec
 
 import groovy.transform.CompileStatic
 
-/** Holds a reference to an executable that will only be made available when explicitly called.
- *
- * This makes it possibly to resolve executables which only become available after packages have been
- * downlaoded.
+/** Creates a {@link ResolvedExecutable}.
  *
  * @since 0.3
  */
 @CompileStatic
-interface ResolvedExecutable {
+interface ResolvedExecutableFactory {
 
-    /** Location of a tool executable.
+    /** Creates {@link ResolvedExecutable} from a specific input.
      *
-     * @return Full path to the tool executable
+     * @param from An object that can be used to resolved an executable. It is up to the implementation to decide whether the
+     *   object is of an appropriate type.
+     * @return The resolved executable.
      */
-    File getExecutable()
+    ResolvedExecutable build(Map<String,Object> options,Object from)
 }

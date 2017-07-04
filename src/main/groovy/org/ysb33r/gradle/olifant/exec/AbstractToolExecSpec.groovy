@@ -127,6 +127,14 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
         return (ProcessForkOptions)this
     }
 
+    /** Lazy-evaluated version of the executable
+     *
+     * @return Lazy-evaluated version of the executable or {@code enull} if not configured.
+     */
+    ResolvedExecutable getResolvedExecutable() {
+        this.executable
+    }
+
     /** Returns the full script line, including the executable, it's specific arguments, tool specific instruction and
      * the arguments spefic to the instruction.
      *
@@ -244,10 +252,21 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
         ] as Map< String, ResolvedExecutableFactory >
     }
 
-    /** Builds up the script-line.
+    /** Builds up the coomand line.
      *
-     * @return
-     * @throw {@code GradleException} is null.
+     * <p> The default format in use is the following:
+     *
+     * <pre>
+     *   executable exeArgs... toolInstruction instructionsArgs...
+     * </pre>
+     *
+     * <p> {@code toolInstruction} is typically a command or a script and
+     *   {@code instructionArgs} the arguments for that script of tool. {@code exeArgs} are any
+     *   command-line arguments meant for the executable which do not form part of the script/command
+     *   customisation.
+     *
+     * @return List of command line parts
+     * @throw {@code GradleException} if executable is not set.
      */
     protected List<String> buildCommandLine() {
         List<String> parts = []

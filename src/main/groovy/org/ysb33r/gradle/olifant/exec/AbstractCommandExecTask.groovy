@@ -83,7 +83,11 @@ abstract class AbstractCommandExecTask<T extends AbstractCommandExecSpec> extend
         toolExecSpec.getCmdArgs()
     }
 
-    private T getToolExecSpec() {
+    /** Execution specification customised for the specific tool
+     *
+     * @return Execution specification cast to the appropriate type.
+     */
+    protected T getToolExecSpec() {
         (T)(super.execSpec)
     }
 }

@@ -16,12 +16,15 @@ package org.ysb33r.gradle.olifant.compatibility.testing
 import org.gradle.api.Project
 import org.gradle.process.ProcessForkOptions
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.gradle.olifant.OperatingSystem
 import org.ysb33r.gradle.olifant.exec.AbstractCommandExecSpec
 import org.ysb33r.gradle.olifant.MapUtils
 import org.ysb33r.gradle.olifant.StringUtils
 import spock.lang.Specification
 
 class AbstractCommandExecSpecSpec extends Specification {
+
+    static final Boolean IS_WINDOWS = OperatingSystem.current().isWindows()
 
     static
     // tag::example-exec-spec[]
@@ -69,7 +72,7 @@ class AbstractCommandExecSpecSpec extends Specification {
 
         then:
         testExecSpec.getCommandLine() == [
-                '/path/to/exe',
+            ( IS_WINDOWS ? new File(project.projectDir,'/path/to/exe').absolutePath : '/path/to/exe'),
                 'first','second','third','fourth',
                 'install',
                 'aye', 'bee', 'cee', 'dee'
@@ -180,7 +183,7 @@ class AbstractCommandExecSpecSpec extends Specification {
         testExecSpec.copyTo(target)
 
         then:
-        target.executable == '/path/to/exe'
+        target.executable == ( IS_WINDOWS ? new File(project.projectDir,'/path/to/exe').absolutePath : '/path/to/exe')
         target.workingDir == project.file('.')
         target.environment == [ foo : 'bar']
     }

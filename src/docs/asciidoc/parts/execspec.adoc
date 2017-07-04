@@ -31,11 +31,11 @@ There is currently three abstract classes in the hierachy and the all implement 
                   \------+----------+----/
                          ^          ^
                          |          |
-               +---------+          +----------+
-               |                               |
-/--------------+--------------\   /------------+-----------\
-| AbstractToolCommandExecSpec |   | AbstractScriptExecSpec |
-\-----------------------------/   \------------------------/
+               +---------+          +------+
+               |                           |
+/--------------+----------\   /------------+-----------\
+| AbstractCommandExecSpec |   | AbstractScriptExecSpec |
+\-------------------------/   \------------------------/
 ....
 
 
@@ -148,6 +148,33 @@ task gitdiff {
 
 === Creating a task
 
-[[PreventExecutableBeingSet]]
-=== Advanced: Preventing executable being set
+There is currently three abstract task classes in the hierachy.
+
+[ditaa]
+....
+
+                     /------------------\
+                     |    DefaultTask   |
+                     \--------+---------/
+                              ^
+                              |
+                              | extends
+                              |
+                  /-----------+----------\
+                  |   AbstractExecTask   |
+                  \------+----------+----/
+                         ^          ^
+                         |          |
+               +---------+          +------+
+               |                           |
+/--------------+----------\   /------------+-----------\
+| AbstractCommandExecTask |   | AbstractScriptExecTask |
+\-------------------------/   \------------------------/
+....
+
+
+The minimum you will need to do is extend the appropriate class and provide a suitable constructor that can be called by Gradle.
+
+//[[PreventExecutableBeingSet]]
+//=== Advanced: Preventing executable being set
 

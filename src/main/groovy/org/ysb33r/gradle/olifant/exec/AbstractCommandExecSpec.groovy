@@ -17,7 +17,7 @@ import groovy.transform.CompileStatic
 import org.gradle.api.Project
 import org.ysb33r.gradle.olifant.StringUtils
 
-/** Tool execution specification aimed at script-line tools which takes a script as one of the arguments.
+/** Tool execution specification aimed at command-line tools which takes a command as one of the arguments.
  *
  * @since 0.3
  */

@@ -274,7 +274,7 @@ abstract class AbstractExecTask<B extends AbstractExecTask, T extends AbstractTo
     }
 
     /** Runs this process against an internal execution specification. If a failure occurs and
-     * {@link #isIgnoreExitValue} is not set an exception will be raised.
+     * {@link #isIgnoreExitValue} is not set, an exception will be raised.
      */
     @TaskAction
     void exec() {

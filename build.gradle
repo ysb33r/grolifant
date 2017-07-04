@@ -11,7 +11,6 @@ buildscript {
 plugins {
     id 'groovy'
     id 'maven'
-    id 'java-library'
     id 'org.ysb33r.bintray' version '1.5'
     id 'org.ysb33r.gradletest' version '1.0-beta5'
     id 'com.github.hierynomus.license' version '0.13.1'

@@ -6,6 +6,8 @@ sudo: false
 before_script:
  - ./gradlew -S clean --console=plain
 
+install: true
+
 script:
  - ./gradlew -S -i --console=plain assemble
  - ./gradlew -S -i --console=plain test
@@ -13,6 +15,7 @@ script:
  - ./gradlew -S -i --console=plain gradleTest -DgradleTest.versions=2.10,2.12,2.14.1
  - ./gradlew -S -i --console=plain gradleTest -DgradleTest.versions=3.0,3.1,3.2.1
  - ./gradlew -S -i --console=plain gradleTest -DgradleTest.versions=3.3,3.4,3.5
+ - ./gradlew -S -i --console=plain gradleTest -DgradleTest.versions=4.0
 
 jdk:
  - oraclejdk8

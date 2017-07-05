@@ -1,12 +1,15 @@
 = CHANGELOG
 
-== Roadmap - 0.3
+== Roadmap - 0.4
+
+== 0.3
 
 // tag::changelog[]
 === Features
-* https://github.com/ysb33r/grolifant/issues/5[#8] - Provides `AbstractToolExecTask`, ``ResolvedExecutable`
+* https://github.com/ysb33r/grolifant/issues/5[#8] - Provides `AbstractToolExecTask`, `ResolvedExecutable`.
 * New `ClosureUtils` class to help dealing with common Closure use cases in Gradle plugins such as configuration.
 * New `MapUtils` class to help dealing with property maps such as lazy evaluation of values.
+* Supports Gradle 4.0
 
 === Other
 

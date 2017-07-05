@@ -44,7 +44,7 @@ These execution specifications allow to easily present configuration options to 
 .Common declarative settings
 [source,groovy]
 ----
-include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[indent=0,tags=declarative]
+include::{compatdir}/AbstractCommandExecSpecSpec.groovy[indent=0,tags=declarative]
 ----
 <1> Whether the exit value can be ignored.
 <2> Where standard output should be sent to. (It is up to a plugin author to decide on behaviour if this value is `null`).
@@ -55,7 +55,7 @@ include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[indent=0,tags=declar
 .Setting process environment
 [source,groovy]
 ----
-include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[indent=0,tags=environment]
+include::{compatdir}/AbstractCommandExecSpecSpec.groovy[indent=0,tags=environment]
 ----
 <1> Explictly set the environment in an assignment style, removing any previous environment settings.
 <2> Add additional environment settings in the familiar, and _gradlesque_, map-style. Values of environmental variables have the ability to be lazily-evaluated by the consuming task or projext extension. (As a plugin author you should consider using `MapUtils.stringizeValues` for your conversions. The tasks described further down do the same).
@@ -68,7 +68,7 @@ The executable can also be set in the normal way, but if you set the executable 
 .Setting executables and executable arguments
 [source,groovy]
 ----
-include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[indent=0,tags=executable]
+include::{compatdir}/AbstractCommandExecSpecSpec.groovy[indent=0,tags=executable]
 ----
 <1> Set the executable. This is also a lazy-evaluated value and anything that link:{groovydoc}/StringUtils.html#stringize(java.lang.Object)[StringUtils.stringize] can deal with can be used. In addition link:{groovydoc}/ResolvedExecutable.html[ResolvedExecutable] instantiations can also be used.
 <2> Explictly set the execution arguments in an assignment style, removing any previous execution arguments.
@@ -81,7 +81,7 @@ In addition to those the link:{groovydoc}/AbstractToolCommandExecSpec.html[Abstr
 .Setting a command and command arguments (AbstractToolCommandExecSpec)
 [source,groovy]
 ----
-include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[indent=0,tags=command]
+include::{compatdir}/AbstractCommandExecSpecSpec.groovy[indent=0,tags=command]
 ----
 <1> Set the command. This can be lazy-evaluated.
 <2> Explictly set the command arguments in an assignment style, removing any previous command arguments.
@@ -103,7 +103,7 @@ In order to implement your own execution specification you need to derive from t
 .Wrapping Git as a tool with commands
 [source,groovy]
 ----
-include::{compatdir}/AbstractToolCommandExecSpecSpec.groovy[tags=example-exec-spec,indent=0]
+include::{compatdir}/AbstractCommandExecSpecSpec.groovy[tags=example-exec-spec,indent=0]
 ----
 
 .Wrapping Perl as a tool which executes scripts

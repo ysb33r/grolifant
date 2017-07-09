@@ -28,15 +28,13 @@ import org.ysb33r.gradle.olifant.internal.execspec.ExecProjectExtension
 @CompileStatic
 class ExtensionUtils {
 
-    /** Adds a project extension so that specific tools can be execute in a similar manner to {@link }.
+    /** Adds a project extension so that specific tools can be execute in a similar manner to {@link org.gradle.api.project#exec}.
      *
      * @param name Name of extension.
      * @param project Project to attach to.
      * @param instantiator Instantiator to use to create new execution specifications.
      */
     static void addExecProjectExtension(final String name, Project project, ExecSpecInstantiator<? extends AbstractToolExecSpec> instantiator) {
-//        project.extensions.add(name, new ExecProjectExtension(project,instantiator))
-//        project.extensions.extraProperties.set(name, new ExecProjectExtension(project,instantiator))
         final ExecProjectExtension delegator = new ExecProjectExtension(project,instantiator)
         project.extensions.extraProperties.set(name, { def cfg ->
             switch(cfg) {
@@ -45,6 +43,9 @@ class ExtensionUtils {
                     break
                 case Action:
                     delegator.call ((Action)cfg)
+                    break
+                case AbstractToolExecSpec:
+                    delegator.execute((AbstractToolExecSpec)cfg)
                     break
                 default:
                     throw new GradleException('Invalid type passed. Use closure or actions.')

@@ -45,7 +45,7 @@ class ExecProjectExtension<T extends AbstractToolExecSpec> {
         execute(execSpec)
     }
 
-    private ExecResult execute(T execSpec) {
+    ExecResult execute(T execSpec) {
         Closure runner = { T fromSpec, ExecSpec toSpec ->
             fromSpec.copyToExecSpec(toSpec)
         }

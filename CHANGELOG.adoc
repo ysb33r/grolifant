@@ -5,7 +5,7 @@
 === Features
 
 
-== Roadmap - 0.3.1
+== 0.3.1
 
 // tag::changelog[]
 === Bugs

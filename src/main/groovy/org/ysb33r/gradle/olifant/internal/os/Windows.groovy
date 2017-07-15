@@ -122,7 +122,7 @@ class Windows extends OperatingSystem {
      */
     @Override
     String getArchStr() {
-        if(OS_ARCH == 'x86_64') {
+        if(OS_ARCH == 'x86_64' || OS_ARCH == 'amd64') {
             return 'amd64'
         }
 

@@ -76,7 +76,7 @@ class Windows extends OperatingSystem {
      */
     @Override
     String getPathVar() {
-        return "Path";
+        return "Path"
     }
 
     /** Return Windows string that is used to suffix to shared libraries
@@ -122,7 +122,7 @@ class Windows extends OperatingSystem {
      */
     @Override
     String getArchStr() {
-        if(OS_ARCH == 'x86_64') {
+        if(OS_ARCH == 'x86_64' || OS_ARCH == 'amd64') {
             return 'amd64'
         }
 

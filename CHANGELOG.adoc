@@ -2,15 +2,19 @@
 
 == Roadmap - 0.4
 
+// tag::changelog[]
 === Features
+
+* https://github.com/ysb33r/grolifant/issues/12[#12] - `AbstractWrappedToolExecution`.
+* https://github.com/ysb33r/grolifant/issues/13[#13] - Utilise Worker API access when available.
+
+// end::changelog[]
 
 == 0.3.2
 
-// tag::changelog[]
 === Bugs
 
 * https://github.com/ysb33r/grolifant/issues/10[#10] - Detect 64-bit architecture correctly under Windows.
-// end::changelog[]
 
 == 0.3.1
 

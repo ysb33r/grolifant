@@ -7,6 +7,8 @@
 
 * https://github.com/ysb33r/grolifant/issues/12[#12] - `AbstractWrappedToolExecution`.
 * https://github.com/ysb33r/grolifant/issues/13[#13] - Utilise Worker API access when available.
+* https://github.com/ysb33r/grolifant/issues/14[#14] - Base class for installable tool extensions
+* https://github.com/ysb33r/grolifant/issues/15[#15] - New exceptions classes
 
 // end::changelog[]
 

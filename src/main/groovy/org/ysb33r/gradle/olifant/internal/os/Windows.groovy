@@ -76,7 +76,7 @@ class Windows extends OperatingSystem {
      */
     @Override
     String getPathVar() {
-        return "Path";
+        return "Path"
     }
 
     /** Return Windows string that is used to suffix to shared libraries

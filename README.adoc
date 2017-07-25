@@ -1,5 +1,7 @@
 = Grolifant Gradle Plugin Support Library
 
+NOTE: This project is moving to https://gitlab.com/ysb33rOrg/grolifant. Please raise new issues there,
+
 The purpose of this library is provide certain building blocks which are key to writing various
   kinds of Gradle plugins, but which are not easily obtainable from Gradle core itself.
 

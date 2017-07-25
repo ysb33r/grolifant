@@ -15,8 +15,8 @@ package org.ysb33r.gradle.olifant
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
-import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.ysb33r.gradle.olifant.errors.ConfigurationException
 import org.ysb33r.gradle.olifant.exec.AbstractToolExecSpec
 import org.ysb33r.gradle.olifant.exec.ExecSpecInstantiator
 import org.ysb33r.gradle.olifant.internal.execspec.ExecProjectExtension
@@ -48,7 +48,7 @@ class ExtensionUtils {
                     delegator.execute((AbstractToolExecSpec)cfg)
                     break
                 default:
-                    throw new GradleException('Invalid type passed. Use closure or actions.')
+                    throw new ConfigurationException('Invalid type passed. Use closure or actions.')
             }
         })
     }

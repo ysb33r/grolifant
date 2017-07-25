@@ -14,7 +14,7 @@
 package org.ysb33r.gradle.olifant
 
 import groovy.transform.CompileStatic
-import org.gradle.api.GradleException
+import org.ysb33r.gradle.olifant.errors.ConfigurationException
 
 /** Methods for dealing with closures
  *
@@ -34,7 +34,7 @@ class ClosureUtils {
         if(runner.maximumNumberOfParameters == 0) {
             runner()
         } else if(runner.maximumNumberOfParameters > 1) {
-            throw new GradleException("Cannot use this closure for configuration as it has more than one input parameter")
+            throw new ConfigurationException("Cannot use this closure for configuration as it has more than one input parameter")
         } else {
             runner(item)
         }

@@ -22,6 +22,7 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
+import org.ysb33r.gradle.olifant.errors.ExecutionException
 
 /** A base class to use for developing execution classes for wrapping tools
  *
@@ -281,7 +282,11 @@ abstract class AbstractExecTask<B extends AbstractExecTask, T extends AbstractTo
         Closure runner = { T fromSpec, ExecSpec toSpec ->
             fromSpec.copyToExecSpec(toSpec)
         }
-        execResult = project.exec runner.curry(this.execSpec)
+        try {
+            execResult = project.exec runner.curry(this.execSpec)
+        } catch(final Exception e) {
+            throw new ExecutionException('Failure in running external process',e)
+        }
     }
 
     /** Creates class and sets default environment to be that of Gradle,

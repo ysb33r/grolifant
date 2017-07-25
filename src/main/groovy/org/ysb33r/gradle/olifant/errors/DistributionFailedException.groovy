@@ -11,12 +11,14 @@
  *
  * ============================================================================
  */
-package org.ysb33r.gradle.olifant
+package org.ysb33r.gradle.olifant.errors
+
+import org.gradle.api.GradleException
 
 /** Thrown when a distribution failed to unpack correctly or does not meet specific criteria.
  *
  */
-class DistributionFailedException extends Exception {
+class DistributionFailedException extends GradleException implements GrolifantError {
 
     /** Instantiates exception
      *

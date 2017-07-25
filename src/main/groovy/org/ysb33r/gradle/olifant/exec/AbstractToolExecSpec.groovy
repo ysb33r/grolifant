@@ -21,6 +21,8 @@ import org.gradle.process.ExecSpec
 import org.gradle.process.ProcessForkOptions
 import org.ysb33r.gradle.olifant.ClosureUtils
 import org.ysb33r.gradle.olifant.StringUtils
+import org.ysb33r.gradle.olifant.errors.ExecConfigurationException
+import org.ysb33r.gradle.olifant.errors.ExecutionException
 import org.ysb33r.gradle.olifant.internal.execspec.ResolveExecutableFromPath
 import org.ysb33r.gradle.olifant.internal.execspec.ResolveExecutableInSearchPath
 
@@ -274,7 +276,7 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
         String exe = getExecutable()
 
         if(exe == null) {
-            throw new GradleException( '''The 'executable' part cannot be null.''')
+            throw new ExecutionException( '''The 'executable' part cannot be null.''')
         }
 
         parts.add exe
@@ -360,10 +362,10 @@ abstract class AbstractToolExecSpec extends AbstractExecSpec {
             }
         } as Set<String>
         if(found.empty) {
-            throw new GradleException("No valid keys found in ${candidateKeys}")
+            throw new ExecConfigurationException("No valid keys found in ${candidateKeys}")
         }
         if(found.size() > 1) {
-            throw new GradleException("More than one key found: ${found}")
+            throw new ExecConfigurationException("More than one key found: ${found}")
         }
         found[0]
     }

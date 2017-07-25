@@ -17,7 +17,6 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import org.gradle.api.Action
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.FileCopyDetails
 import org.gradle.api.file.FileTree
@@ -28,6 +27,7 @@ import org.gradle.wrapper.IDownload
 import org.gradle.wrapper.PathAssembler
 import org.gradle.wrapper.WrapperConfiguration
 import org.tukaani.xz.XZInputStream
+import org.ysb33r.gradle.olifant.errors.DistributionFailedException
 import org.ysb33r.gradle.olifant.internal.LegacyLevel
 
 import java.security.MessageDigest
@@ -162,7 +162,7 @@ abstract class AbstractDistributionInstaller {
      * @return The directory where the real distribution now exists. In the default implementation it will be
      *   the single directory that exists below {@code distDir}.
      *
-     * @throw {@link org.ysb33r.gradle.olifant.DistributionFailedException} if distribution failed to meet criteria.
+     * @throw {@link org.ysb33r.gradle.olifant.errors.DistributionFailedException} if distribution failed to meet criteria.
      */
     protected File getAndVerifyDistributionRoot(final File distDir, final String distributionDescription) {
         List<File> dirs = listDirs(distDir)
@@ -291,7 +291,7 @@ abstract class AbstractDistributionInstaller {
                 if (needsDownload) {
 
                     if(project.gradle.startParameter.isOffline() && distributionUrl.scheme != 'file') {
-                        throw new GradleException("Cannot download ${distributionName} '${distributionVersion}' as currently offline")
+                        throw new DistributionFailedException("Cannot download ${distributionName} '${distributionVersion}' as currently offline")
                     }
 
                     File tmpCompressedFile = new File(localCompressedFile.getParentFile(), localCompressedFile.getName() + ".part")

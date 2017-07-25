@@ -16,6 +16,7 @@ package org.ysb33r.gradle.olifant.internal.execspec
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
 import org.ysb33r.gradle.olifant.OperatingSystem
+import org.ysb33r.gradle.olifant.errors.ExecutionException
 import org.ysb33r.gradle.olifant.exec.ResolvedExecutable
 import org.ysb33r.gradle.olifant.exec.ResolvedExecutableFactory
 import org.ysb33r.gradle.olifant.StringUtils
@@ -44,7 +45,7 @@ class ResolveExecutableInSearchPath implements ResolvedExecutableFactory {
                 final File foundPath = OS.findInPath(path)
 
                 if(foundPath == null) {
-                    throw new GradleException("Cannot locate '${path}' in system search path")
+                    throw new ExecutionException("Cannot locate '${path}' in system search path")
                 }
 
                 foundPath

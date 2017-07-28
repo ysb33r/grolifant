@@ -33,6 +33,8 @@ ext {
     notSnapshot = {!version.endsWith("SNAPSHOT") }
 
     depSpock = "org.spockframework:spock-core:1.0-groovy-${GroovySystem.version.replaceAll(/\.\d+$/,'')}"
+
+    cacheTestBinariesFolder = file("${buildDir}/cached-binaries")
 }
 
 repositories {
@@ -102,6 +104,7 @@ sourceSets.test.groovy {
 
 test {
     systemProperties COMPAT_TEST_RESOURCES_DIR : file('src/gradleTest/runtimeCompatibility/src/test/resources')
+    systemProperties 'org.ysb33r.gradle.olifant.lessmsi.uri' : cacheTestBinariesFolder.absolutePath
 }
 
 gradleTest {

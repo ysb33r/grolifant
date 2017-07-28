@@ -30,6 +30,7 @@ import org.gradle.wrapper.WrapperConfiguration
 import org.tukaani.xz.XZInputStream
 import org.ysb33r.gradle.olifant.errors.DistributionFailedException
 import org.ysb33r.gradle.olifant.internal.LegacyLevel
+import org.ysb33r.gradle.olifant.internal.msi.LessMSIUnpacker
 
 import java.security.MessageDigest
 import java.util.concurrent.Callable
@@ -339,10 +340,11 @@ abstract class AbstractDistributionInstaller {
      *
      * @param srcArchive The location of the download MSI
      * @param destDir The directory where the MSI needs to be unpacked into
+     * @param env Environment to use. Can be null or empty inwhich case a default environment will be used
      */
-    protected void unpackMSI(File srcArchive, File destDir) {
+    protected void unpackMSI(File srcArchive, File destDir, final Map<String,String> env) {
         if(IS_WINDOWS) {
-            doUnPackMSI('msiexec',srcArchive,destDir)
+            new LessMSIUnpacker(project).unpackMSI(srcArchive,destDir,env)
         } else {
             throw new DistributionFailedException("MSI unpacking is only supported under Windows")
         }
@@ -356,16 +358,6 @@ abstract class AbstractDistributionInstaller {
      */
     @PackageScope URI safeUri(URI uri)  {
         new URI(uri.scheme, null, uri.host, uri.port, uri.path, uri.query, uri.fragment)
-    }
-
-    @CompileDynamic
-    private ExecResult doUnPackMSI(String msiLocation, File srcArchive, File destDir) {
-        // Run msiexec /a drive:\filepath\to\MSI\file /qb TARGETDIR=drive:\filepath\to\target\folder
-        project.exec {
-            environment System.getenv()
-            executable msiLocation
-            args '/a', srcArchive.absolutePath, '/qb', "TARGETDIR=${destDir.absolutePath}"
-        }
     }
 
     private String calculateSha256Sum(final File file) {

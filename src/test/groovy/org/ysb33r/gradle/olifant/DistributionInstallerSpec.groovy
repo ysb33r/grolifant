@@ -175,7 +175,7 @@ class DistributionInstallerSpec extends Specification {
 
         @Override
         protected void unpack(File srcArchive, File destDir) {
-            unpackMSI(srcArchive, destDir)
+            unpackMSI(srcArchive, destDir,null)
         }
     }
 

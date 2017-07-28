@@ -88,7 +88,7 @@ Only SHA-256 checksums are supported. if you need something else you will need t
 
 By default, `AbstractDistributionInstaller` already knows how to unpack ZIPs and TARs of a varierty of compressions. If something else is required, then the link:{groovydoc}++/AbstractDistributionInstaller.html#unpack(java.io.File, java.io.File)++[unpack] method can be overridden.
 
-This is the approach to follow if you need suppotr for unpacking MSIs. There is a helper method called link:{groovydoc}/++AbstractDistributionInstaller.html#unpackMSI(java.io.File, java.io.File)++[unpackMSI] which calls out to the Microsoft utility `msiexec` with the correct parameters. In order to use htis in a practical way it is better to override the `unpack` method and call it from there. For example:
+This is the approach to follow if you need support for unpacking MSIs. There is a helper method called link:{groovydoc}/++AbstractDistributionInstaller.html#unpackMSI(java.io.File, java.io.File)++[unpackMSI] which will install and then call the https://github.com/activescott/lessmsi[lessmsi] utility with the correct parameters. In order to use this in a practical way it is better to override the `unpack` method and call it from there. For example:
 
 .Overriding for adding MSI support.
 [source,groovy]
@@ -96,7 +96,7 @@ This is the approach to follow if you need suppotr for unpacking MSIs. There is 
 @Override
 protected void unpack(File srcArchive, File destDir) {
     if(srcArchive.name.endsWith('.msi')) {
-        unpackMSI(srcArchive,destDir)
+        unpackMSI(srcArchive,destDir,[:])  // <1>
 
         // Add additional file and directory manipulation here if needed
 
@@ -105,6 +105,7 @@ protected void unpack(File srcArchive, File destDir) {
     }
 }
 ----
+<1> The third parameter can be used to set up a special environment for `lessmsi` if needed.
 
 === Advanced: Override verification
 [[Verification]]

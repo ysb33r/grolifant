@@ -15,6 +15,7 @@ package org.ysb33r.gradle.olifant
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.ysb33r.gradle.olifant.errors.DistributionFailedException
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -116,6 +117,23 @@ class DistributionInstallerSpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
+    void 'Unpacking an MSI'() {
+        given: 'A MSO distribution'
+        TestInstallerForMSI installer = new TestInstallerForMSI(project)
+
+        when: 'The MSI based distribution is downloaded'
+        File downloaded = installer.distributionRoot
+
+        then: 'The MSI distribution should be unpacked on Windows (or exception or other OS)'
+        if(installer.IS_WINDOWS) {
+            downloaded.exists()
+            downloaded.absolutePath.contains(distPathString(TestInstallerForVariousFormats.DISTPATH))
+            downloaded.absolutePath.endsWith("testdist-${TestInstallerForVariousFormats.DISTVER}")
+        } else {
+            thrown(DistributionFailedException)
+        }
+    }
+
     static class TestInstaller extends AbstractDistributionInstaller {
 
         // tag::test_installer[]
@@ -147,6 +165,17 @@ class DistributionInstallerSpec extends Specification {
         @Override
         URI uriFromVersion(String version) {
             TESTDIST_DIR.toURI().resolve("testdist-${DISTVER}.${ext}")
+        }
+    }
+
+    static class TestInstallerForMSI extends TestInstallerForVariousFormats {
+        TestInstallerForMSI(Project project) {
+            super ('msi',project )
+        }
+
+        @Override
+        protected void unpack(File srcArchive, File destDir) {
+            unpackMSI(srcArchive, destDir)
         }
     }
 

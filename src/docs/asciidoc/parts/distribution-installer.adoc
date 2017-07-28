@@ -88,6 +88,24 @@ Only SHA-256 checksums are supported. if you need something else you will need t
 
 By default, `AbstractDistributionInstaller` already knows how to unpack ZIPs and TARs of a varierty of compressions. If something else is required, then the link:{groovydoc}++/AbstractDistributionInstaller.html#unpack(java.io.File, java.io.File)++[unpack] method can be overridden.
 
+This is the approach to follow if you need suppotr for unpacking MSIs. There is a helper method called link:{groovydoc}/++AbstractDistributionInstaller.html#unpackMSI(java.io.File, java.io.File)++[unpackMSI] which calls out to the Microsoft utility `msiexec` with the correct parameters. In order to use htis in a practical way it is better to override the `unpack` method and call it from there. For example:
+
+.Overriding for adding MSI support.
+[source,groovy]
+----
+@Override
+protected void unpack(File srcArchive, File destDir) {
+    if(srcArchive.name.endsWith('.msi')) {
+        unpackMSI(srcArchive,destDir)
+
+        // Add additional file and directory manipulation here if needed
+
+    } else {
+        super.unpack(srcArchive, destDir)
+    }
+}
+----
+
 === Advanced: Override verification
 [[Verification]]
 Verification of a downloaded distribution occurs in two parts:
@@ -97,7 +115,7 @@ Verification of a downloaded distribution occurs in two parts:
 
 Once again it is possible to customise this behaviour if your distribution have different needs. In this case there are two protected methods than can be overridden:
 
-* link:{groovydoc}++/AbstractDistributionInstaller.html#verifyDownloadChecksum(java.lang.String, java.io.File, java.lang.String)++[verifyDownloadChecksum] - Override this method to take care of handling checksums. The method, when called, will be passed the URI where the distribution was downlaoded from, the location of the archive on the filesystem and the expected checksum. It is possible to pass `null` for the latter which means that no checksum is available.
+* link:{groovydoc}/++AbstractDistributionInstaller.html#verifyDownloadChecksum(java.lang.String, java.io.File, java.lang.String)++[verifyDownloadChecksum] - Override this method to take care of handling checksums. The method, when called, will be passed the URI where the distribution was downlaoded from, the location of the archive on the filesystem and the expected checksum. It is possible to pass `null` for the latter which means that no checksum is available.
 * link:{groovydoc}++/AbstractDistributionInstaller.html#getAndVerifyDistributionRoot(java.io.File, java.lang.String)++[getAndVerifyDistributionRoot] - This validates the distribution on disk. When called, it is passed the the location where the distribution was unpacked into. The method should return the effective home directory of the distribution.
 
 NOTE: In the case of `getAndVerifyDistributionRoot` it can be very confusing sometimes as to what the `distDir` is and what should be returned. The easiest is to explain this by looking at how Gradle wrappers are stored. For instance for Gradle 3.0 the `distDir` might be something like `~/.gradle/wrapper/dists/gradle-3.0-bin/2z3tfybitalx2py5dr8rf2mti/` whereas the return directory would be `~/.gradle/wrapper/dists/gradle-3.0-bin/2z3tfybitalx2py5dr8rf2mti/gradle-3.0`.
@@ -108,4 +126,5 @@ NOTE: In the case of `getAndVerifyDistributionRoot` it can be very confusing som
 * link:{groovydoc}/AbstractDistributionInstaller.html#getProject()[getProject] provides access to the associated Gradle `Project` object.
 * link:{groovydoc}/AbstractDistributionInstaller.html#listDirs(java.io.File)[listDirs] provides a listing of directories directly below an unpacked distribution. It can also be used for any directory if the intent is to see which child directories are available.
 * link:{groovydoc}/AbstractDistributionInstaller.html#getLogger()[getLogger] provides access to a simple `stdout` logger.
+
 

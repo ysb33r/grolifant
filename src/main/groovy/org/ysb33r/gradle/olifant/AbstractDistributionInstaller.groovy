@@ -21,6 +21,7 @@ import org.gradle.api.Project
 import org.gradle.api.file.FileCopyDetails
 import org.gradle.api.file.FileTree
 import org.gradle.api.logging.LogLevel
+import org.gradle.process.ExecResult
 import org.gradle.wrapper.Download
 import org.gradle.wrapper.ExclusiveFileAccessManager
 import org.gradle.wrapper.IDownload
@@ -214,14 +215,18 @@ abstract class AbstractDistributionInstaller {
 
     /** Unpacks a downloaded archive.
      *
-     * The default implementation supports
+     * <p> The default implementation supports the following formats:
+     *
      * <ul>
-     * <li>zip</li>
-     * <li>tar</li>
-     * <li>tar.gz & tgz</li>
-     * <li>tar.bz2 & tbz</li>
-     * <li>tar.xz</li>
+     *   <li>zip</li>
+     *   <li>tar</li>
+     *   <li>tar.gz & tgz</li>
+     *   <li>tar.bz2 & tbz</li>
+     *   <li>tar.xz</li>
      * </ul>
+     *
+     * <p> If you need MSI support you need to override this method and call out to the
+     * provided {@link #unpackMSI} method yourself.
      *
      * @param srcArchive The location of the download archive
      * @param destDir The directory where the archive needs to be unpacked into
@@ -328,6 +333,21 @@ abstract class AbstractDistributionInstaller {
         this.project
     }
 
+    /** Provides the capability of unpacking an MSI file under Windows by calling out to {@code msiexec}.
+     *
+     * <p> {@code msiexec} will be located via the system search path.
+     *
+     * @param srcArchive The location of the download MSI
+     * @param destDir The directory where the MSI needs to be unpacked into
+     */
+    protected void unpackMSI(File srcArchive, File destDir) {
+        if(IS_WINDOWS) {
+            doUnPackMSI('msiexec',srcArchive,destDir)
+        } else {
+            throw new DistributionFailedException("MSI unpacking is only supported under Windows")
+        }
+    }
+
     /**
      * Create a safe URI from the given one by stripping out user info.
      *
@@ -336,6 +356,16 @@ abstract class AbstractDistributionInstaller {
      */
     @PackageScope URI safeUri(URI uri)  {
         new URI(uri.scheme, null, uri.host, uri.port, uri.path, uri.query, uri.fragment)
+    }
+
+    @CompileDynamic
+    private ExecResult doUnPackMSI(String msiLocation, File srcArchive, File destDir) {
+        // Run msiexec /a drive:\filepath\to\MSI\file /qb TARGETDIR=drive:\filepath\to\target\folder
+        project.exec {
+            environment System.getenv()
+            executable msiLocation
+            args '/a', srcArchive.absolutePath, '/qb', "TARGETDIR=${destDir.absolutePath}"
+        }
     }
 
     private String calculateSha256Sum(final File file) {

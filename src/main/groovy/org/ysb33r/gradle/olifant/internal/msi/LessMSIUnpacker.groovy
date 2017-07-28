@@ -1,3 +1,16 @@
+/*
+ * ============================================================================
+ * (C) Copyright Schalk W. Cronje 2016 - 2017
+ *
+ * This software is licensed under the Apache License 2.0
+ * See http://www.apache.org/licenses/LICENSE-2.0 for license details
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ * ============================================================================
+ */
 package org.ysb33r.gradle.olifant.internal.msi
 
 import groovy.transform.CompileDynamic
@@ -13,7 +26,7 @@ import org.ysb33r.gradle.olifant.errors.DistributionFailedException
 @CompileStatic
 class LessMSIUnpacker extends AbstractDistributionInstaller {
 
-    static final String LESSMSI_VERSION =  '1.16.1'
+    static final String LESSMSI_VERSION =  '1.6.1'
     static final String LESSMSI_DOWNLOAD_URI = 'https://github.com/activescott/lessmsi/releases/download'
 
     /** Creates setup for installing to a local cache.

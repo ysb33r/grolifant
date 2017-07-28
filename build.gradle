@@ -4,9 +4,10 @@ buildscript {
     }
     dependencies {
         classpath 'org.asciidoctor:asciidoctorj-diagram:1.3.1'
+//        classpath 'commons-httpclient:commons-httpclient:3.1'
+        classpath 'io.github.http-builder-ng:http-builder-ng-okhttp:0.17.0'
     }
 }
-
 
 plugins {
     id 'groovy'
@@ -15,9 +16,12 @@ plugins {
     id 'org.ysb33r.gradletest' version '1.0-beta5'
     id 'com.github.hierynomus.license' version '0.13.1'
     id 'org.asciidoctor.convert' version '1.5.3'
+//    id 'org.ysb33r.vfs' version '1.0'
 }
 
 import org.asciidoctor.gradle.AsciidoctorTask
+import groovyx.net.http.optional.Download
+import static groovyx.net.http.HttpBuilder.configure
 
 group 'org.ysb33r.gradle'
 version '0.4-SNAPSHOT'
@@ -34,11 +38,26 @@ ext {
 
     depSpock = "org.spockframework:spock-core:1.0-groovy-${GroovySystem.version.replaceAll(/\.\d+$/,'')}"
 
+    lessMsiVer = (file('src/main/groovy/org/ysb33r/gradle/olifant/internal/msi/LessMSIunpacker.groovy').readLines().grep {
+        it =~ /static\s+final\s+String\s+LESSMSI_VERSION\s+=/
+    })[0].replaceFirst(~/^(.+?["'])/,'').replaceFirst(~/(["'].*)$/,'')
+
+    currentOS =  org.gradle.internal.os.OperatingSystem.current()
+
     cacheTestBinariesFolder = file("${buildDir}/cached-binaries")
 }
 
 repositories {
     jcenter()
+
+    ivy {
+        name 'Downloader for LessMSI'
+        url 'https://github.com/activescott/lessmsi/releases/download'
+        resolve.dynamicMode = false
+        layout 'pattern', {
+            artifact 'v[revision]/[artifact]-v[revision].[ext]'
+        }
+    }
 }
 
 dependencies {
@@ -56,6 +75,24 @@ sourceSets {
         groovy {
             srcDir file('src/gradleTest/runtimeCompatibility/src/test/groovy')
         }
+    }
+}
+
+task cacheTestBinaries {
+    enabled = !project.gradle.startParameter.offline
+    File target = file("${cacheTestBinariesFolder}/v${lessMsiVer}/lessmsi-v${lessMsiVer}.zip")
+    outputs.file target
+    onlyIf { !target.exists() && currentOS.windows }
+
+    doLast {
+        mkdir target.parentFile
+
+        configure {
+            request.uri = "https://github.com/activescott/lessmsi/releases/download/v${lessMsiVer}/lessmsi-v${lessMsiVer}.zip"
+        }.get {
+            Download.toFile(delegate, target)
+        }
+
     }
 }
 
@@ -103,6 +140,7 @@ sourceSets.test.groovy {
 }
 
 test {
+    dependsOn cacheTestBinaries
     systemProperties COMPAT_TEST_RESOURCES_DIR : file('src/gradleTest/runtimeCompatibility/src/test/resources')
     systemProperties 'org.ysb33r.gradle.olifant.lessmsi.uri' : cacheTestBinariesFolder.absolutePath
 }

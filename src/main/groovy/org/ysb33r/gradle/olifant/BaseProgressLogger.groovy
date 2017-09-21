@@ -13,10 +13,17 @@
  */
 package org.ysb33r.gradle.olifant
 
-/**
- * @since 0.4
+import groovy.transform.CompileStatic
+
+/** A simple interface for logging progress to stdout.
+ *
  */
-interface ProgressLogger extends BaseProgressLogger {
-    void started()
-    void completed()
+@CompileStatic
+interface BaseProgressLogger {
+
+    /** Sends a progress message.
+     *
+     * @param message
+     */
+    void log(String message)
 }

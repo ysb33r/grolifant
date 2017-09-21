@@ -21,7 +21,6 @@ import org.gradle.api.Project
 import org.gradle.api.file.FileCopyDetails
 import org.gradle.api.file.FileTree
 import org.gradle.api.logging.LogLevel
-import org.gradle.process.ExecResult
 import org.gradle.wrapper.Download
 import org.gradle.wrapper.ExclusiveFileAccessManager
 import org.gradle.wrapper.IDownload
@@ -128,7 +127,7 @@ abstract class AbstractDistributionInstaller {
      *
      * @return Wrapper logger instance
      */
-    protected ProgressLogger getLogger() {
+    protected BaseProgressLogger getLogger() {
         this.logger
     }
 
@@ -151,7 +150,7 @@ abstract class AbstractDistributionInstaller {
         this.basePath = basePath
 
         List<?> bootstrap = AbstractDistributionInstaller.createDownloader(distributionName,project)
-        this.logger = (ProgressLogger)(bootstrap[0])
+        this.logger = (BaseProgressLogger)(bootstrap[0])
         this.downloader = (IDownload)(bootstrap[1])
     }
 
@@ -416,7 +415,7 @@ abstract class AbstractDistributionInstaller {
     private static List<?> createDownloader(final String distributionName,Project project) {
         boolean quiet = project.logging.level < LogLevel.INFO
         IDownload downloader
-        ProgressLogger progressLogger
+        BaseProgressLogger progressLogger
 
         Class<?> wrapperLoggerClass = null;
         try {
@@ -431,7 +430,7 @@ abstract class AbstractDistributionInstaller {
                     loggerCtor.newInstance(quiet)
                 }
 
-                progressLogger = [ log : { String msg -> wrapperLogger.log(msg)} ] as ProgressLogger
+                progressLogger = [ log : { String msg -> wrapperLogger.log(msg)} ] as BaseProgressLogger
                 downloader = ctor.newInstance(wrapperLogger, distributionName, INSTALLER_VERSION)
 
             } else if( ctor.parameterTypes == [org.gradle.api.logging.Logger, String, String] as Class[] ) {
@@ -450,7 +449,7 @@ abstract class AbstractDistributionInstaller {
     }
 
 
-    private static class Progress implements ProgressLogger {
+    private static class Progress implements BaseProgressLogger {
         private final boolean quiet
 
         Progress(boolean quiet) {
@@ -464,7 +463,7 @@ abstract class AbstractDistributionInstaller {
         }
     }
 
-    private ProgressLogger logger
+    private BaseProgressLogger logger
     private String sdkManCandidateName
     private String checksum
     private String distributionName

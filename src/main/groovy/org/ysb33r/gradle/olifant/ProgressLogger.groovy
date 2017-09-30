@@ -13,10 +13,23 @@
  */
 package org.ysb33r.gradle.olifant
 
-/**
+import org.gradle.api.Project
+
+/** Allows implementation against
+ *
  * @since 0.4
  */
 interface ProgressLogger extends BaseProgressLogger {
+
+    /** Allow logging to start
+     *
+     * <p> Any attempt to log before this will result in an exception.
+     */
     void started()
+
+    /** Prevent further logging.
+     *
+     * <p> Any attempt to log after this will result in an exception.
+     */
     void completed()
 }

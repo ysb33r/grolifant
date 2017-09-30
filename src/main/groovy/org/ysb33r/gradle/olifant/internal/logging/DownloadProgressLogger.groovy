@@ -28,6 +28,11 @@ import org.ysb33r.gradle.olifant.ProgressLogger
 @CompileStatic
 class DownloadProgressLogger implements ProgressLogger {
 
+    /** Creates a basic progress logger that can bew used for downloading etc.
+     *
+     * @param project Project that this logger will be attached to.
+     * @param text Set description and logging header.
+     */
     DownloadProgressLogger(final Project project,final String text) {
         this.logger = findFactoryFor(project,findLoggerFactory()).invokeMethod('newOperation',this.class)
         if(this.logger) {
@@ -42,11 +47,19 @@ class DownloadProgressLogger implements ProgressLogger {
         this.logger?.invokeMethod('progress',text)
     }
 
+    /** Allow logging to start
+     *
+     * <p> Any attempt to log before this will result in an exception.
+     */
     @Override
     void started() {
         startLogging()
     }
 
+    /** Prevent further logging.
+     *
+     * <p> Any attempt to log after this will result in an exception.
+     */
     @Override
     void completed() {
         stopLogging()
